@@ -1,0 +1,628 @@
+101. Symmetric Tree
+Given a binary tree, check whether it is a mirror of itself
+********************************************
+public class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        return isMirror(root, root);
+    }
+    
+    public boolean isMirror(TreeNode p, TreeNode q) {
+        if(p == null && q == null) {
+            return true;
+        }
+        if(p == null || q ==null) {
+            return false;
+        }
+        return (p.val == q.val) && isMirror(p.left, q.right) && isMirror(p.right, q.left);
+    }
+}
+---------------------------------------------
+
+102. Binary Tree Level Order Traversal
+Given a binary tree, return the level order traversal of its nodes' values. 
+(ie, from left to right, level by level).
+********************************************
+public class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        List<List<Integer>> wrapList = new LinkedList<List<Integer>>();
+        
+        if(root == null) return wrapList;
+        
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            int levelNum = queue.size();
+            List<Integer> subList = new LinkedList<Integer>();
+            for(int i=0; i<levelNum; i++) {
+                if(queue.peek().left != null) queue.offer(queue.peek().left);
+                if(queue.peek().right != null) queue.offer(queue.peek().right);
+                subList.add(queue.poll().val);
+            }
+            wrapList.add(subList);
+        }
+        return wrapList;
+    }
+}
+---------------------------------------------
+
+104. Maximum Depth of Binary Tree
+********************************************
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public int maxDepth(TreeNode root) {
+        if(root == null) return 0;
+        return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+    }
+}
+---------------------------------------------
+
+107. Binary Tree Level Order Traversal II
+Given a binary tree, return the bottom-up level order traversal of its nodes' values
+********************************************
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        LinkedList<List<Integer>> list = new LinkedList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        if(root == null) return list;
+        queue.offer(root);
+        while(!queue.isEmpty()) {
+        	int num = queue.size();
+        	List<Integer> subList = new ArrayList<>();
+        	for(int i = 0; i < num; i++) {
+        		if(queue.peek().left != null) queue.offer(queue.peek().left);
+        		if(queue.peek().right != null) queue.offer(queue.peek().right);
+        		subList.add(queue.poll().val);
+        	}
+        	list.addFirst(subList);
+        }
+        return list;
+    }
+}
+---------------------------------------------
+108. Convert Sorted Array to Binary Search Tree
+Given an array where elements are sorted in ascending order,
+ convert it to a height balanced BST.
+*********************************************
+public class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if(nums == null || nums.length == 0) return null;
+        return helper(nums, 0, nums.length - 1);
+    }
+    public TreeNode helper(int[] nums, int lo, int hi) {
+        if(lo > hi) return null;
+        int mid = lo + (hi - lo) / 2;
+        TreeNode node = new TreeNode(nums[mid]);
+        node.left = helper(nums, lo, mid - 1);
+        node.right = helper(nums, mid + 1, hi);
+        return node;
+    }
+}
+---------------------------------------------
+109. Convert Sorted List to Binary Search Tree
+Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+*********************************************
+public class Solution {
+	public TreeNode sortedListToBST(ListNode head) {
+		if (head == null)
+		return null;
+		return toBST(head, null);
+	}
+
+	public TreeNode toBST(ListNode head, ListNode tail) {
+		ListNode slow = head;
+		ListNode fast = head;
+		if (head == tail)
+			return null;
+
+		while (fast != tail && fast.next != tail) {
+			fast = fast.next.next;
+			slow = slow.next;
+		}
+		TreeNode thead = new TreeNode(slow.val);
+		thead.left = toBST(head, slow);
+		thead.right = toBST(slow.next, tail);
+		return thead;
+	}
+}
+---------------------------------------------
+
+110. Balanced Binary Tree
+Given a binary tree, determine if it is height-balanced.
+For this problem, a height-balanced binary tree is defined as a binary tree
+in which the depth of the two subtrees of every node never differ by more than 1.
+********************************************
+public class Solution {
+    public boolean isBalanced(TreeNode root) {  
+        if(root == null){  
+            return true;  
+        }  
+
+        if(Math.abs(depth(root.left)-depth(root.right)) > 1){  
+            return false;  
+        }  
+        return isBalanced(root.left) && isBalanced(root.right);  
+    }  
+      
+    public int depth(TreeNode root){  
+        if(root==null){  
+            return 0;  
+        }  
+        return 1+Math.max(depth(root.left), depth(root.right));  
+    } 
+}
+---------------------------------------------
+111. Minimum Depth of Binary Tree
+*********************************************
+public class Solution {
+    public int minDepth(TreeNode root) {
+        if(root == null) return 0;
+        int left = minDepth(root.left);
+        int right = minDepth(root.right);
+        return (left == 0 || right == 0) ? left + right + 1: Math.min(left,right) + 1;
+    }
+}
+---------------------------------------------
+112. Path Sum
+Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that 
+adding up all the values along the path equals the given sum.
+**********************************************
+public class Solution {
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if(root == null) return false;
+    
+        if(root.left == null && root.right == null && sum - root.val == 0) return true;
+    
+        return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
+    }
+}
+------------------------------------------------
+114.Flatten Binary Tree to Linked List
+Given a binary tree, flatten it to a linked list in-place.
+************************************************
+public class Solution {
+    TreeNode prev = null;
+    public void flatten(TreeNode root) {
+        if (root == null)
+            return;
+        flatten(root.right);
+        flatten(root.left);
+        root.right = prev;
+        root.left = null;
+        prev = root;
+    }
+}
+-------------------------------------------------
+
+116.Populating Next Right Pointers in Each Node
+Populate each next pointer to point to its next right node. 
+If there is no next right node, the next pointer should be set to NULL.
+Initially, all next pointers are set to NULL.
+**************************************************
+public class Solution {
+    public void connect(TreeLinkNode root) {
+        if(root ==null) return;
+        if(root.left != null) {
+            root.left.next = root.right;
+            if(root.next != null) {
+                root.right.next = root.next.left;
+            }
+        }
+        connect(root.left);
+        connect(root.right);
+    }
+}
+---------------------------------------------------
+
+118. Pascal's Triangle
+Given numRows, generate the first numRows of Pascal's triangle.
+For example, given numRows = 5,
+Return
+[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+********************************************
+public class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> allrows = new ArrayList<List<Integer>>();
+        ArrayList<Integer> row = new ArrayList<Integer>();
+        for(int i = 0; i < numRows; i++) {
+            row.add(0, 1);
+            for(int j = 1; j < row.size() - 1; j++)
+                row.set(j, row.get(j) + row.get(j + 1));
+            allrows.add(new ArrayList<Integer>(row));
+        }
+        return allrows;
+    }
+}
+---------------------------------------------
+
+119. Pascal's Triangle II
+Given an index k, return the kth row of the Pascal's triangle.
+For example, given k = 3,
+Return [1,3,3,1].
+************************************************
+public class Solution {
+    public List<Integer> getRow(int rowIndex) {
+        List<Integer> row = new ArrayList<Integer>();
+        for(int i = 0; i <= rowIndex; i++) {
+            row.add(0, 1);
+            for(int j = 1; j < row.size() - 1; j++) {
+                row.set(j, row.get(j) + row.get(j + 1));
+            }
+            
+        }
+        return row;
+    }
+}
+----------------------------------------------------
+121. Best Time to Buy and Sell Stock
+Say you have an array for which the ith element is the price of a given stock on day i.
+If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), 
+design an algorithm to find the maximum profit.
+************************************************
+public class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices.length == 0) {
+		return 0;
+	}
+	int max = 0;
+	int sofarMin = prices[0];
+	for (int i = 0; i < prices.length; ++i) {
+		if (prices[i] > sofarMin) {
+			max = Math.max(max, prices[i] - sofarMin);
+		} else {
+			sofarMin = prices[i];
+		}
+	}
+	return max;
+    }
+}
+----------------------------------------------------
+122. Best Time to Buy and Sell Stock II
+Say you have an array for which the ith element is the price of a given stock on day i.
+Design an algorithm to find the maximum profit. You may complete as many transactions as you like 
+(ie, buy one and sell one share of the stock multiple times). 
+However, you may not engage in multiple transactions at the same time 
+(ie, you must sell the stock before you buy again)
+************************************************
+public class Solution {
+    public int maxProfit(int[] prices) {
+        int total = 0;
+        for (int i=0; i < prices.length-1; i++) {
+            if (prices[i + 1] > prices[i]) total += prices[i + 1] - prices[i];
+        }
+        return total;
+    }
+}
+------------------------------------------------------
+125. Valid Palindrome
+Given a string, determine if it is a palindrome, 
+considering only alphanumeric characters and ignoring cases.
+For example,
+"A man, a plan, a canal: Panama" is a palindrome.
+"race a car" is not a palindrome.
+************************************************
+public class Solution {
+    public boolean isPalindrome(String s) {
+        String actual = s.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+        String rev = new StringBuffer(actual).reverse().toString();
+        return actual.equals(rev);
+    }
+}
+------------------------------------------------------
+128. Longest Consecutive Sequence
+Given an unsorted array of integers, 
+find the length of the longest consecutive elements sequence.
+For example,
+Given [100, 4, 200, 1, 3, 2],
+The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4.
+Your algorithm should run in O(n) complexity.
+************************************************
+public class Solution {
+    public int longestConsecutive(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        int max = 1;
+        int total = 1;
+        Arrays.sort(nums);
+        for(int i = 1; i < nums.length; i++) {
+            if(nums[i] == nums[i - 1]) continue;
+            else {
+                if(nums[i] == nums[i - 1] + 1) {
+                total += 1;
+                } else {
+                    total = 1;
+                }
+
+                if(total > max) max = total;
+            }
+            
+        }
+        return max;
+    }
+}
+------------------------------------------------------
+129. Sum Root to Leaf Numbers
+Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
+An example is the root-to-leaf path 1->2->3 which represents the number 123.
+Find the total sum of all root-to-leaf numbers.
+************************************************
+public class Solution {
+    public int sumNumbers(TreeNode root) {
+        return sum(root, 0);
+    }
+    public int sum(TreeNode p, int n) {
+        if(p == null) return 0;
+        if(p.left == null && p.right == null) return n * 10 + p.val;
+        return sum(p.left, n * 10 + p.val) + sum(p.right, n * 10 + p.val);
+    }
+}
+-------------------------------------------------
+
+
+136. Single Number
+Given an array of integers, every element appears twice except for one. Find that single one.
+Note:
+Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+********************************************
+public class Solution {
+    public int singleNumber(int[] nums) {
+        int result = 0;
+        for(int i : nums) {
+            result ^= i;
+        }
+        return result;
+    }
+}
+---------------------------------------------
+
+137. Single Number II
+Given an array of integers, every element appears three times except for one, 
+which appears exactly once. Find that single one.
+Note:
+Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+********************************************
+public class Solution {
+    public int singleNumber(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        if(nums.length == 1) return nums[0];
+        Arrays.sort(nums);
+        for(int i = 0; i < nums.length - 3; ) {
+            if(nums[i] != nums[i+1]) return nums[i];
+            i += 3;
+        }
+        if(nums[nums.length - 1] != nums[nums.length - 2]) return nums[nums.length - 1];
+        return 0;
+    }
+}
+---------------------------------------------
+
+141. Linked List Cycle
+Given a linked list, determine if it has a cycle in it.
+********************************************
+//方法1 两个不同速度的指针，如果快指针追上慢的则有环
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+//方法2   检查每个节点是否在之前浏览过，使用Hash表
+public boolean hasCycle(ListNode head) {
+    Set<ListNode> nodesSeen = new HashSet<>();
+    while (head != null) {
+        if (nodesSeen.contains(head)) {
+            return true;
+        } else {
+            nodesSeen.add(head);
+        }
+        head = head.next;
+    }
+    return false;
+}
+---------------------------------------------
+142. Linked List Cycle II
+Given a linked list, return the node where the cycle begins. If there is no cycle, return null.
+********************************************
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head, fast = head;
+        while(fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (slow == fast) {
+                while (head != slow) {
+                    head = head.next;
+                    slow = slow.next;
+                }
+                return slow;				
+            }
+        }			
+        return null;
+    }
+}
+---------------------------------------------
+
+143. Reorder List
+Given a singly linked list L: L0?L1?…?Ln-1?Ln,
+reorder it to: L0?Ln?L1?Ln-1?L2?Ln-2?…
+You must do this in-place without altering the nodes' values.
+For example,
+Given {1,2,3,4}, reorder it to {1,4,2,3}.
+********************************************
+public class Solution {
+
+	public void reorderList(ListNode head) {
+		if (head == null || head.next == null)
+			return;
+
+		// step 1. cut the list to two halves
+		// prev will be the tail of 1st half
+		// slow will be the head of 2nd half
+		ListNode prev = null, slow = head, fast = head, l1 = head;
+
+		while (fast != null && fast.next != null) {
+			prev = slow;
+			slow = slow.next;
+			fast = fast.next.next;
+		}
+
+		prev.next = null;
+
+		// step 2. reverse the 2nd half
+		ListNode l2 = reverse(slow);
+
+		// step 3. merge the two halves
+		head = merge(l1, l2);
+	}
+
+	ListNode reverse(ListNode head) {
+		ListNode prev = null, curr = head, next = null;
+
+		while (curr != null) {
+			next = curr.next;
+			curr.next = prev;
+			prev = curr;
+			curr = next;
+		}
+
+		return prev;
+	}
+
+	ListNode merge(ListNode l1, ListNode l2) {
+		while (l1 != null) {
+			ListNode n1 = l1.next, n2 = l2.next;
+			l1.next = l2;
+
+			if (n1 == null)
+				break;
+
+			l2.next = n1;
+			l1 = n1;
+			l2 = n2;
+		}
+		return l1;
+	}
+
+}
+---------------------------------------------
+
+144. Binary Tree Preorder Traversal
+Given a binary tree, return the preorder traversal of its nodes' values.
+********************************************
+public class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        preOrder(root, list);
+        return list;
+    }
+    public void preOrder(TreeNode root, List<Integer> list) {
+        if(root == null) return;
+        list.add(root.val);
+        preOrder(root.left, list);
+        preOrder(root.right, list);
+    }
+}
+---------------------------------------------
+145. Binary Tree Postorder Traversal
+********************************************
+public class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        List<Integer> list = new LinkedList<>();
+        postOrder(root, list);
+        return list;
+    }
+    public void postOrder(TreeNode root, List list) {
+        if(root == null) return;
+        postOrder(root.left, list);
+        postOrder(root.right, list);
+        list.add(root.val);
+    }
+}
+---------------------------------------------
+
+一颗星147. Insertion Sort List
+********************************************
+public class Solution {
+    public ListNode insertionSortList(ListNode head) {
+		if( head == null ){
+			return head;
+		}
+		
+		ListNode helper = new ListNode(0); //new starter of the sorted list
+		ListNode cur = head; //the node will be inserted
+		ListNode pre = helper; //insert node between pre and pre.next
+		ListNode next = null; //the next node will be inserted
+		//not the end of input list
+		while( cur != null ){
+			next = cur.next;
+			//find the right place to insert
+			while( pre.next != null && pre.next.val < cur.val ){
+				pre = pre.next;
+			}
+			//insert between pre and pre.next
+			cur.next = pre.next;
+			pre.next = cur;
+			pre = helper;
+			cur = next;
+		}
+		
+		return helper.next;
+	}
+}
+---------------------------------------------

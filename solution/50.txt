@@ -1,0 +1,482 @@
+1.Two Sum
+Given nums = [2, 7, 11, 15], target = 9,
+
+Because nums[0] + nums[1] = 2 + 7 = 9,
+return [0, 1].
+*************************
+public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        int[] res = new int[2];
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < nums.length; i++) {
+            map.put(nums[i], i);
+        }
+        for(int i = 0; i < nums.length; i++) {
+            if(map.containsKey(target - nums[i]) && i != map.get(target - nums[i])) {
+                res[0] = i;
+                res[1] = map.get(target - nums[i]);
+                return res;
+            }
+        }
+        return res;
+    }
+}
+--------------------------------
+
+3.
+Given a string, find the length of the longest substring without repeating characters.
+Examples:
+
+Given "abcabcbb", the answer is "abc", which the length is 3.
+Given "bbbbb", the answer is "b", with the length of 1.
+Given "pwwkew", the answer is "wke",  "pwke" is a subsequence and not a substring.
+**************************************************
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        int i = 0; int j = 0; int max = 0;
+        Set<Character> set = new HashSet<>();
+        while(i < s.length()) {
+            if(!set.contains(s.charAt(i))) {
+                set.add(s.charAt(i++));
+                max = Math.max(max, set.size());
+            } else {
+                set.remove(s.charAt(j++));
+            }
+        }
+        return max;
+    }
+}
+----------------------------------------------------
+5. Longest Palindromic Substring
+Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
+Example:
+Input: "babad"
+Output: "bab"
+Note: "aba" is also a valid answer.
+**************************************************
+class Solution {
+    public String longestPalindrome(String s) {
+        String res = "";
+        int currLength = 0;
+        for(int i=0;i<s.length();i++){
+            if(isPalindrome(s,i-currLength-1,i)){
+                res = s.substring(i-currLength-1,i+1);
+                currLength = currLength+2;
+            }
+            else if(isPalindrome(s,i-currLength,i)){
+                res = s.substring(i-currLength,i+1);
+                currLength = currLength+1;
+            }
+        }
+        return res;
+    }
+    
+    public boolean isPalindrome(String s, int begin, int end){
+        if(begin<0) return false;
+        while(begin<end){
+        	if(s.charAt(begin++)!=s.charAt(end--)) return false;
+        }
+        return true;
+    }
+}
+----------------------------------------------------
+
+7.Reverse Integer
+Reverse digits of an integer.
+Example1: x = 123, return 321
+Example2: x = -123, return -321
+*************************
+public class Solution {
+    public int reverse(int x) {
+        long res = 0;
+        while(x != 0) {
+            res = res * 10 + x % 10;
+            x /= 10;
+            if(res > Integer.MAX_VALUE || res < Integer.MIN_VALUE) {
+                return 0;
+            }
+        }
+        return (int)res;
+    }
+}
+--------------------------------
+
+8.Implement atoi to convert a string to an integer.
+****************************
+public class Solution {
+    public int myAtoi(String str) {
+        if (str == null || str.length() == 0)
+            return 0;//
+        str = str.trim();
+        char firstChar = str.charAt(0);
+        int sign = 1, start = 0, len = str.length();
+        long sum = 0;
+        if (firstChar == '+') {
+            sign = 1;
+            start++;
+        } else if (firstChar == '-') {
+            sign = -1;
+            start++;
+        }
+        for (int i = start; i < len; i++) {
+            if (str.charAt(i) < '0' || str.charAt(i) > '9')
+                return (int) sum * sign;
+            sum = sum * 10 + str.charAt(i) - '0';
+            if (sign == 1 && sum > Integer.MAX_VALUE)
+                return Integer.MAX_VALUE;
+            if (sign == -1 && (-1) * sum < Integer.MIN_VALUE)
+                return Integer.MIN_VALUE;
+        }
+
+        return (int) sum * sign;
+    }
+}
+9.
+Determine whether an integer is a palindrome. Do this without extra space.
+****************************
+public class Solution {
+    public boolean isPalindrome(int x) {
+        if(x < 0 ) {
+            return false;
+        }
+        int rev = 0;
+        int y = x;
+        while(y >= 10) {
+            rev = rev * 10 + y % 10;
+            y /= 10;
+        }
+        return (rev == x / 10 && y == x % 10);
+    }
+}
+--------------------------------
+
+14.Write a function to find the longest common prefix string amongst an array of strings.
+****************************
+public class Solution {
+    public String longestCommonPrefix(String[] strs) {
+        if(strs.length == 0 || strs == null) {
+            return "";
+        }
+        int min = strs[0].length();
+        for(int i = 0; i < strs.length; i++) {
+            if( strs[i].length() < min ) min = strs[i].length();
+        }
+        
+        String s = "";
+        for(int i = 0; i < min; i++) {
+            Character temp = strs[0].charAt(i);
+            
+            for(int j = 0; j < strs.length; j++) {
+                if(temp != strs[j].charAt(i)) {
+                    return s;
+                }
+            }
+            s += temp;
+            
+        }
+        return s;
+    }
+}
+--------------------------------
+
+20. Valid Parentheses
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', 
+determine if the input string is valid.
+The brackets must close in the correct order, "()" and "()[]{}" 
+are all valid but "(]" and "([)]" are not.
+*******************************
+public class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        for(char c : s.toCharArray()) {
+            if(c == '(') {
+                stack.push(')');
+            } else if (c == '[') {
+                stack.push(']');
+            } else if (c == '{') {
+                stack.push('}');
+            } else if (stack.isEmpty() || stack.pop() != c) {
+                return false;
+            }
+        }
+        return stack.isEmpty();
+    }
+}
+--------------------------------
+21.Merge Two Sorted Lists
+Merge two sorted linked lists and return it as a new list.
+ The new list should be made by splicing together the nodes of the first two lists.
+************************************
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if(l1 == null) {
+            return l2;
+        }
+        if(l2 == null) {
+            return l1;
+        }
+        ListNode mergedHead;
+        if(l1.val < l2.val) {
+            mergedHead = l1;
+            mergedHead.next = mergeTwoLists(l1.next, l2);
+        }else {
+            mergedHead = l2;
+            mergedHead.next = mergeTwoLists(l1, l2.next);
+        }
+        return mergedHead;
+       
+    }
+}
+----------------------------------------
+26. Remove Duplicates from Sorted Array
+Given input array nums = [1,1,2],
+Your function should return length = 2
+*****************************************
+public class Solution {
+    public int removeDuplicates(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        int j = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] != nums[j]) {
+                nums[++j] = nums[i];
+            }
+        }
+        return ++j;
+    }
+}
+------------------------------------------
+
+27. Remove Element
+Given input array nums = [3,2,2,3], val = 3
+Your function should return length = 2
+*******************************************
+public class Solution {
+    public int removeElement(int[] nums, int val) {
+        int n = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] != val) {
+                nums[n++] = nums[i];
+            }
+        }
+        return n;
+    }
+}
+-------------------------------------------
+28. Implement strStr()
+Returns the index of the first occurrence of needle in haystack, 
+or -1 if needle is not part of haystack.
+*******************************************
+public class Solution {
+    public int strStr(String haystack, String needle) {
+        int M = needle.length();
+        int N = haystack.length();
+        if(N < M) {
+            return -1;
+        } else if (M == 0) {
+            return 0;
+        }
+        for(int i = 0; i <= N - M; i++) {
+            if(haystack.substring(i, i + M).equals(needle)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+------------------------------------------
+35. Search Insert Position
+
+Here are few examples.
+[1,3,5,6], 5 ¡ú 2
+[1,3,5,6], 2 ¡ú 1
+[1,3,5,6], 7 ¡ú 4
+[1,3,5,6], 0 ¡ú 0
+********************************************
+public class Solution {
+    public int searchInsert(int[] nums, int target) {
+        if(nums.length == 0 || nums == null) {
+            return -1;
+        }
+        for(int i = 0; i < nums.length; i++) {
+            if(target <= nums[i]) {
+                return i;
+            }
+        }
+        return nums.length;
+    }
+}
+»òÕß
+public class Solution {
+public int searchInsert(int[] nums, int target) {
+    int low = 0, high = nums.length;
+    while(low < high) {
+        int mid = low + (high - low) / 2;
+        if(nums[mid] < target)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    return low;
+}
+--------------------------------------------
+38. Count and Say
+The count-and-say sequence is the sequence of integers with the first five terms as following:
+1.     1
+2.     11
+3.     21
+4.     1211
+5.     111221
+*******************************************
+public class Solution {
+    public String countAndSay(int n) {
+        String res = "1";
+        
+        while(--n > 0) {
+            res = apply(res);
+        }
+        
+        return res;
+    }
+    
+    public String apply (String s) {
+        StringBuilder ret = new StringBuilder();
+        for(int i = 0, count = 0; i < s.length(); ) {
+            while(i + count < s.length() && (s.charAt(i) == s.charAt(i + count)) ) {
+                count++;
+            }
+            ret.append(count);
+            ret.append(s.charAt(i));
+            i += count;
+            count = 0;
+        }
+        return ret.toString();
+    }
+}
+--------------------------------------------
+39. Combination Sum
+*********************************************
+class Solution {
+    public List<List<Integer>> combinationSum(int[] nums, int target) {
+        List<List<Integer>> list = new ArrayList<>();
+        Arrays.sort(nums);
+        backtrack(list, new ArrayList<>(), nums, target, 0);
+        return list;
+    }
+
+    private void backtrack(List<List<Integer>> list, List<Integer> tempList, int [] nums, int remain, int start){
+        if(remain < 0) return;
+        else if(remain == 0) list.add(new ArrayList<>(tempList));
+        else{ 
+            for(int i = start; i < nums.length; i++){
+                tempList.add(nums[i]);
+                backtrack(list, tempList, nums, remain - nums[i], i); // not i + 1 because we can reuse same elements
+                tempList.remove(tempList.size() - 1);
+            }
+        }
+    }
+}
+-----------------------------------------------
+46. Permutations
+Given a collection of distinct numbers, return all possible permutations.
+For example,
+[1,2,3] have the following permutations:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+*******************************************
+public class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+       List<List<Integer>> list = new ArrayList<>();
+       // Arrays.sort(nums); // not necessary
+       backtrack(list, new ArrayList<>(), nums);
+       return list;
+    }
+
+    private void backtrack(List<List<Integer>> list, List<Integer> tempList, int [] nums){
+       if(tempList.size() == nums.length){
+          list.add(new ArrayList<>(tempList));
+       } else{
+          for(int i = 0; i < nums.length; i++){ 
+             if(tempList.contains(nums[i])) continue; // element already exists, skip
+             tempList.add(nums[i]);
+             backtrack(list, tempList, nums);
+             tempList.remove(tempList.size() - 1);
+          }
+       }
+    }
+}
+------------------------------------------
+
+48. Rotate Image
+*******************************************
+public class Solution {
+    public void rotate(int[][] matrix) {
+        for(int i = 0; i < matrix.length; i++) {
+            for(int j = i; j < matrix[0].length; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        for(int j = 0; j < matrix[0].length / 2; j++) {
+            for(int i = 0; i < matrix.length; i++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][matrix.length-1-j];
+                matrix[i][matrix.length-1-j] = temp;
+            }
+        }
+    }
+}
+------------------------------------------
+49. Group Anagrams
+For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
+Return:
+[
+  ["ate", "eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+***************************************
+public class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length == 0) return new ArrayList<List<String>>();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (String s : strs) {
+            char[] ca = s.toCharArray();
+            Arrays.sort(ca);
+            String keyStr = String.valueOf(ca);
+            if (!map.containsKey(keyStr)) map.put(keyStr, new ArrayList<String>());
+            map.get(keyStr).add(s);
+        }
+        return new ArrayList<List<String>>(map.values());
+    }
+}
+------------------------------------------
+50.Pow(x,n)
+***************************************
+class Solution {
+    public double myPow(double x, int n) {
+        if (n < 0) return 1 / (x*myPow(x, -(++n)));
+        else if (n == 0) return 1;
+        else return (n % 2 == 0) ? myPow(x*x, n / 2) : x*myPow(x*x, n / 2);
+    }
+}
+------------------------------------------

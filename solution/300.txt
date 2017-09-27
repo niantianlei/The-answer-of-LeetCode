@@ -1,0 +1,302 @@
+257. Binary Tree Paths
+Given a binary tree, return all root-to-leaf paths.
+For example, given the following binary tree:
+   1
+ /   \
+2     3
+ \
+  5
+All root-to-leaf paths are:
+["1->2->5", "1->3"]
+**********************************************************************
+class Solution {
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> list = new LinkedList<>();
+        if(root == null) return list;
+        helper(root, "", list);
+        return list;
+    }
+    public void helper(TreeNode root, String path, List<String> list) {
+        if(root.left == null && root.right == null) list.add(path + root.val);
+        if(root.left != null) helper(root.left, path + root.val + "->", list);
+        if(root.right != null) helper(root.right, path + root.val + "->", list);
+    }
+}
+----------------------------------------------------------------------
+
+258. Add Digits
+Given a non-negative integer num, repeatedly add all its digits until the result has only one digit.
+For example:
+Given num = 38, the process is like: 3 + 8 = 11, 1 + 1 = 2. Since 2 has only one digit, return it.
+**********************************************************************
+class Solution {
+    public int addDigits(int num) {
+        int res = 0;
+        while(num > 0) {
+            res += num % 10;
+            num /= 10;
+        }
+        if(res >= 10) {
+            return addDigits(res);
+        }
+        return res;
+    }
+}
+Лђеп
+//2*10^3+3*10^2+4*10+5 = 2+3+4+5 % 9
+return 1 + (num - 1) % 9;
+----------------------------------------------------------------------
+
+260. Single Number III
+Given an array of numbers nums, in which exactly two elements appear only once and 
+all the other elements appear exactly twice. Find the two elements that appear only once.
+For example:
+Given nums = [1, 2, 1, 3, 2, 5], return [3, 5].
+**********************************************************************
+class Solution {
+    public int[] singleNumber(int[] nums) {
+        int[] res = new int[2];
+        int j = 0;
+        Arrays.sort(nums);
+        for(int i = 0; i < nums.length; i++){
+            if(i == nums.length - 1 || nums[i] != nums[i + 1]) {
+                res[j] = nums[i];
+                j = j + 1;
+            } else {
+                i =i + 1;
+            }
+        }
+        return res;  
+    }
+}
+----------------------------------------------------------------------
+
+263. Ugly Number
+Write a program to check whether a given number is an ugly number.
+Ugly numbers are positive numbers whose prime factors only include 
+2, 3, 5. For example, 6, 8 are ugly while 14 is not ugly since it includes another prime factor 7.
+Note that 1 is typically treated as an ugly number.
+**********************************************************************
+class Solution {
+    public boolean isUgly(int num) {
+        if(num == 1) return true;
+        if(num == 0) return false;
+        while(num % 2 == 0) num = num/2;
+        while(num % 3 == 0) num = num/3;
+        while(num % 5 == 0) num = num/5;
+        return num == 1;
+    }
+}
+----------------------------------------------------------------------
+
+264. Ugly Number II
+Write a program to find the n-th ugly number.
+
+Ugly numbers are positive numbers whose prime factors only include 2, 3, 5. For example, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 is the sequence of the first 10 ugly numbers.
+
+Note that 1 is typically treated as an ugly number, and n does not exceed 1690.
+**********************************************************************
+class Solution {
+    public int nthUglyNumber(int n) {
+        int[] ugly = new int[n];
+        ugly[0] = 1;
+        int index2 = 0, index3 = 0, index5 = 0;
+        int factor2 = 2, factor3 = 3, factor5 = 5;
+        for(int i=1;i<n;i++){
+            int min = Math.min(Math.min(factor2,factor3),factor5);
+            ugly[i] = min;
+            if(factor2 == min)
+                factor2 = 2*ugly[++index2];
+            if(factor3 == min)
+                factor3 = 3*ugly[++index3];
+            if(factor5 == min)
+                factor5 = 5*ugly[++index5];
+        }
+        return ugly[n-1];
+    }
+}
+----------------------------------------------------------------------
+268. Missing Number
+Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.
+For example,
+Given nums = [0, 1, 3] return 2.
+**********************************************************************
+class Solution {
+    public int missingNumber(int[] nums) {
+        Arrays.sort(nums);
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] != i) return i;
+        }
+        return nums[nums.length-1] + 1;
+    }
+}
+----------------------------------------------------------------------
+278. First Bad Version
+**********************************************************************
+public class Solution extends VersionControl {
+    public int firstBadVersion(int n) {
+        int lo = 1; int hi = n;
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (!isBadVersion(mid)) lo = mid + 1;
+            else hi = mid - 1;  
+        }
+        return lo;
+    }
+}
+----------------------------------------------------------------------
+283. Move Zeroes
+Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be [1, 3, 12, 0, 0].
+**********************************************************************
+class Solution {
+    public void moveZeroes(int[] nums) {
+        if(nums == null || nums.length == 0) return;
+        int j = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] != 0) {
+                nums[j++] = nums[i];
+            }
+        }
+        while(j < nums.length) {
+            nums[j++] = 0;
+        }
+    }
+}
+----------------------------------------------------------------------
+284. Peeking Iterator
+**********************************************************************
+// Java Iterator interface reference:
+// https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html
+class PeekingIterator implements Iterator<Integer> {
+    private Integer next = null;
+    private Iterator<Integer> iter;
+    
+	public PeekingIterator(Iterator<Integer> iterator) {
+	    // initialize any member here.
+	    iter = iterator;
+        next = iter.hasNext() ? iter.next() : null;
+	}
+
+    // Returns the next element in the iteration without advancing the iterator.
+	public Integer peek() {
+        return next;
+	}
+
+	// hasNext() and next() should behave the same as in the Iterator interface.
+	// Override them if needed.
+	@Override
+	public Integer next() {
+	    Integer temp = next;
+        next = iter.hasNext() ? iter.next() : null;
+        return temp;
+	}
+
+	@Override
+	public boolean hasNext() {
+	    return next != null;
+	}
+}
+----------------------------------------------------------------------
+287. Find the Duplicate Number
+**********************************************************************
+class Solution {
+    public int findDuplicate(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for(int i = 0; i < nums.length; i++)
+        if(!set.add(nums[i])) {
+            return nums[i];
+        }
+        return -1;
+    }
+}
+----------------------------------------------------------------------
+290. Word Pattern
+pattern = "abba", str = "dog cat cat dog" should return true.
+pattern = "abba", str = "dog cat cat fish" should return false.
+pattern = "aaaa", str = "dog cat cat dog" should return false.
+pattern = "abba", str = "dog dog dog dog" should return false.
+**********************************************************************
+class Solution {
+    public boolean wordPattern(String pattern, String str) {
+        String[] words = str.split(" ");
+        if (words.length != pattern.length())
+            return false;
+        Map index = new HashMap();
+        for (Integer i=0; i<words.length; ++i)
+            if (index.put(pattern.charAt(i), i) != index.put(words[i], i))
+                return false;
+        return true;
+    }
+}
+----------------------------------------------------------------------
+292. Nim Game
+**********************************************************************
+class Solution {
+    public boolean canWinNim(int n) {
+        if(n % 4 == 0) return false;
+        return true;
+    }
+}
+----------------------------------------------------------------------
+295. Find Median from Data Stream
+**********************************************************************
+class MedianFinder {
+    private Queue<Long> min = new PriorityQueue<>();
+    private Queue<Long> max = new PriorityQueue<>();
+    /** initialize your data structure here. */
+    public MedianFinder() {
+        
+    }
+    
+    public void addNum(int num) {
+        max.add((long)num);
+        min.add(-max.poll());
+        if(max.size() < min.size()) {
+            max.add(-min.poll());
+        }
+    }
+    
+    public double findMedian() {
+        return max.size() > min.size() ? max.peek() : (max.peek() - min.peek()) / 2.0;
+    }
+}
+----------------------------------------------------------------------
+299. Bulls and Cows
+**********************************************************************
+class Solution {
+    public String getHint(String secret, String guess) {
+        int bulls = 0;
+        int cows = 0;
+        int[] numbers = new int[10];
+        for (int i = 0; i < secret.length(); i++) {
+            if (secret.charAt(i) == guess.charAt(i)) bulls++;
+            else {
+                if (numbers[secret.charAt(i)-'0']++ < 0) cows++;
+                if (numbers[guess.charAt(i)-'0']-- > 0) cows++;
+            }
+        }
+        return bulls + "A" + cows + "B";
+    }
+}
+----------------------------------------------------------------------
+300. Longest Increasing Subsequence
+Given [10, 9, 2, 5, 3, 7, 101, 18],
+The longest increasing subsequence is [2, 3, 7, 101], therefore the length is 4. Note that there may be more than one LIS 
+**********************************************************************
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        int len = 0;
+
+        for(int x : nums) {
+            int i = Arrays.binarySearch(dp, 0, len, x);
+            if(i < 0) i = -(i + 1);
+            dp[i] = x;
+            if(i == len) len++;
+        }
+
+        return len;
+    }
+}
+----------------------------------------------------------------------

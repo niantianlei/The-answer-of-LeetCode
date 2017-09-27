@@ -1,0 +1,396 @@
+151. Reverse Words in a String
+Given an input string, reverse the string word by word.
+For example,
+Given s = "the sky is blue",
+return "blue is sky the".
+************************************************************
+public class Solution {
+    public String reverseWords(String s) {
+        String[] strs = s.trim().split("\\s+");
+        StringBuilder res = new StringBuilder();
+        for(int i = strs.length - 1; i >= 1; i--) {
+            res.append(strs[i] + " ");
+        }
+        return res.toString() + strs[0];
+    }
+}
+---------------------------------------------------------------
+
+152. Maximum Product Subarray
+Find the contiguous subarray within an array (containing at least one number) which has the largest product.
+For example, given the array [2,3,-2,4],
+the contiguous subarray [2,3] has the largest product = 6.
+************************************************************
+public class Solution {
+	public int maxProduct(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int max = nums[0], min = nums[0], result = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int temp = max;
+            max = Math.max(Math.max(max * nums[i], min * nums[i]), nums[i]);
+            min = Math.min(Math.min(temp * nums[i], min * nums[i]), nums[i]);
+            if (max > result) {
+                result = max;
+            }
+        }
+        return result;
+	}
+}
+---------------------------------------------------------------
+
+155. Min Stack
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+************************************************************
+public class MinStack {
+    private int min;
+    private Stack<Integer> stack;
+    /** initialize your data structure here. */
+    public MinStack() {
+        min = Integer.MAX_VALUE;
+        stack = new Stack<Integer>();
+    }
+    
+    public void push(int x) {
+        if(x <= min) {
+            stack.push(min);
+            min = x;
+        }
+        stack.push(x);
+    }
+    
+    public void pop() {
+        if(stack.pop() == min) min = stack.pop();
+    }
+    
+    public int top() {
+        return stack.peek();
+    }
+    
+    public int getMin() {
+        return min;
+    }
+}
+---------------------------------------------------------------
+
+160. Intersection of Two Linked Lists
+Write a program to find the node at which the intersection of two singly linked lists begins.
+***************************************************************
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null) return null;
+        ListNode a = headA;
+        ListNode b = headB;
+
+        //if a & b have different len, then we will stop the loop after second iteration
+        while( a != b){
+            //for the end of first iteration, we just reset the pointer to the head of another linkedlist
+            a = a == null? headB : a.next;
+            b = b == null? headA : b.next;    
+        }
+
+        return b;
+    }
+}
+----------------------------------------------------------------
+
+162. Find Peak Element
+A peak element is an element that is greater than its neighbors.
+Given an input array where num[i] ≠ num[i+1], find a peak element and return its index.
+The array may contain multiple peaks, in that case return the index to any one of the peaks is fine.
+You may imagine that num[-1] = num[n] = -∞.
+For example, in array [1, 2, 3, 1], 3 is a peak element and your function should return the index number 2.
+***************************************************************
+public class Solution {
+    public int findPeakElement(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return Integer.MIN_VALUE;
+        }
+        if(nums.length == 1) return 0;
+        for(int i = 1; i < nums.length - 1; i++) {
+            if(nums[i] > nums[i - 1] && nums[i] > nums[i + 1]) return i; 
+        }
+        if(nums[nums.length - 1] > nums[nums.length - 2]) return nums.length - 1;
+        return 0;
+    }
+}
+----------------------------------------------------------------
+
+164. Maximum Gap
+Given an unsorted array, find the maximum difference between the successive elements in its sorted form.
+Try to solve it in linear time/space.
+Return 0 if the array contains less than 2 elements.
+You may assume all elements in the array are non-negative integers and fit in the 32-bit signed integer range.
+***************************************************************
+public class Solution {
+    public int maximumGap(int[] nums) {
+        if(nums == null || nums.length < 2) return 0;
+        int max = 0;
+        Arrays.sort(nums);
+        for(int i = 1; i < nums.length; i++) {
+            int d = nums[i] - nums[i - 1];
+            if(d > max) max = d;
+        }
+        return max;
+    }
+}
+----------------------------------------------------------------
+
+165. Compare Version Numbers
+Compare two version numbers version1 and version2.
+If version1 > version2 return 1, if version1 < version2 return -1, otherwise return 0.
+You may assume that the version strings are non-empty and contain only digits and the . character.
+The . character does not represent a decimal point and is used to separate number sequences.
+For instance, 2.5 is not "two and a half" or "half way to version three", 
+it is the fifth second-level revision of the second first-level revision.
+*****************************************************************
+public class Solution {
+    public int compareVersion(String version1, String version2) {
+        String[] strs1 = version1.split("\\.");
+        String[] strs2 = version2.split("\\.");
+        for(int i = 0; i < strs1.length || i < strs2.length; i++) {
+            Integer a = i < strs1.length? Integer.parseInt(strs1[i]) : 0;
+            Integer b = i < strs2.length? Integer.parseInt(strs2[i]) : 0;
+            int compare = a.compareTo(b);
+            if(compare == 0) {
+                continue;
+            } else {
+                return compare;
+            }
+        }
+        return 0;
+    }
+}
+----------------------------------------------------------------
+
+167. Two Sum II - Input array is sorted
+Given an array of integers that is already sorted in ascending order, find two numbers such that they add up to a specific target number.
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. 
+Please note that your returned answers (both index1 and index2) are not zero-based.
+You may assume that each input would have exactly one solution and you may not use the same element twice.
+*****************************************************************
+public class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int[] res = new int[2];
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < numbers.length; i++) {
+            if(map.containsKey(target - numbers[i])) {
+                res[1] = i + 1;
+                res[0] = map.get(target - numbers[i]);
+                return res;
+            } 
+            map.put(numbers[i], i + 1);
+        }
+        return res;
+    }
+}
+----------------------------------------------------------------
+
+168. Excel Sheet Column Title
+Given a positive integer, return its corresponding column title as appear in an Excel sheet.
+For example:
+    1 -> A
+    2 -> B
+    3 -> C
+    ...
+    26 -> Z
+    27 -> AA
+    28 -> AB
+*****************************************************************
+public class Solution {
+    public String convertToTitle(int n) {
+        String res = "";
+        while(n > 0) {
+            res = (char)((n-1) % 26 + 'A') + res;
+            n = (n - 1) / 26;
+        }
+        return res;
+    }
+}
+----------------------------------------------------------------
+
+169. Majority Element
+Given an array of size n, find the majority element. 
+The majority element is the element that appears more than  floor(n/2)  times.
+You may assume that the array is non-empty and the majority element always exist in the array.
+*****************************************************************
+public class Solution {
+    public int majorityElement(int[] nums) {
+        Arrays.sort(nums);
+        return nums[(0 + nums.length - 1) / 2];
+    }
+}
+----------------------------------------------------------------
+171. Excel Sheet Column Number(168的反向)
+Related to question Excel Sheet Column Title
+Given a column title as appear in an Excel sheet, return its corresponding column number.
+For example:
+    A -> 1
+    B -> 2
+    C -> 3
+    ...
+    Z -> 26
+    AA -> 27
+    AB -> 28 
+*****************************************************************
+public class Solution {
+    public int titleToNumber(String s) {
+        int res = 0;
+        int j = 0;
+        for(int i = s.length() - 1; i >= 0; i--) {
+            res = (s.charAt(i) - 'A' + 1) * (int)Math.pow(26, j++) + res;
+        }
+        return res;
+    }
+}
+//或者
+public class Solution {
+    public int titleToNumber(String s) {
+        int result = 0;
+        for(int i = 0 ; i < s.length(); i++) {
+          result = result * 26 + (s.charAt(i) - 'A' + 1);
+        }
+        return result;
+    }
+}
+----------------------------------------------------------------
+
+172. Factorial Trailing Zeroes
+Given an integer n, return the number of trailing zeroes in n!.
+*****************************************************************
+public class Solution {
+    public int trailingZeroes(int n) {
+        return n == 0 ? 0 : n / 5 + trailingZeroes(n / 5);
+    }
+} 
+//或者
+public class Solution {
+    public int trailingZeroes(int n) {
+        int r = 0;
+        while (n > 0) {
+            n /= 5;
+            r += n;
+        }
+        return r;
+    }
+}
+----------------------------------------------------------------
+
+一颗星173. Binary Search Tree Iterator
+Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST.
+Calling next() will return the next smallest number in the BST.
+*****************************************************************
+public class BSTIterator {
+    Stack<TreeNode> stack;
+    
+    public BSTIterator(TreeNode root) {
+        stack = new Stack<>();
+        pushAll(root);
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode temp = stack.pop();
+        pushAll(temp.right);
+        return temp.val;
+    }
+    
+    private void pushAll(TreeNode node) {
+        for (; node != null; stack.push(node), node = node.left);
+    }
+}
+----------------------------------------------------------------
+
+187. Repeated DNA Sequences
+All DNA is composed of a series of nucleotides abbreviated as A, C, G, and T, for example: "ACGAATTCCG". 
+When studying DNA, it is sometimes useful to identify repeated sequences within the DNA.
+Write a function to find all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule.
+For example,
+Given s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT",
+Return:
+["AAAAACCCCC", "CCCCCAAAAA"].
+*****************************************************************
+public class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        Set<String> seen = new HashSet<>(), repeated = new HashSet<>();
+        for(int i = 0; i < s.length() - 9; i++) {
+            String ten = s.substring(i, i + 10);
+            if(!seen.add(ten))  repeated.add(ten);
+        }
+        return new ArrayList<String>(repeated);
+    }
+}
+----------------------------------------------------------------
+
+189. Rotate Array
+Rotate an array of n elements to the right by k steps.
+For example, with n = 7 and k = 3, the array [1,2,3,4,5,6,7] is rotated to [5,6,7,1,2,3,4].
+*****************************************************************
+public class Solution {
+    public void rotate(int[] nums, int k) {
+        int[] a = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            a[(i + k) % nums.length] = nums[i];
+        }
+        for (int i = 0; i < nums.length; i++) {
+            nums[i] = a[i];
+        }
+    }
+}
+----------------------------------------------------------------
+191. Number of 1 Bits
+*****************************************************************
+public static int hammingWeight(int n) {
+	int ones = 0;
+    	while(n!=0) {
+    		ones = ones + (n & 1);
+    		n = n>>>1;
+    	}
+    	return ones;
+}
+----------------------------------------------------------------
+199.Binary Tree Right Side View
+Given a binary tree, imagine yourself standing on the right side of it, 
+return the values of the nodes you can see ordered from top to bottom.
+For example:
+Given the following binary tree,
+   1            <---
+ /   \
+2     3         <---
+ \     \
+  5     4       <---
+You should return [1, 3, 4].
+*****************************************************************
+public class Solution {
+    public List<Integer> rightSideView(TreeNode root) {
+        // reverse level traversal
+        List<Integer> result = new ArrayList();
+        Queue<TreeNode> queue = new LinkedList();
+        if (root == null) return result;
+        
+        queue.offer(root);
+        while (queue.size() != 0) {
+            int size = queue.size();
+            for (int i=0; i<size; i++) {
+                TreeNode cur = queue.poll();
+                if (i == 0) result.add(cur.val);
+                if (cur.right != null) queue.offer(cur.right);
+                if (cur.left != null) queue.offer(cur.left);
+            }
+            
+        }
+        return result;
+    }
+}
+----------------------------------------------------------------
