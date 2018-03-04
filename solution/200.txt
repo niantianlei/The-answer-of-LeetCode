@@ -307,7 +307,10 @@ public class BSTIterator {
     }
     
     private void pushAll(TreeNode node) {
-        for (; node != null; stack.push(node), node = node.left);
+        while(node != null) {
+            stack.push(node);
+            node = node.left;
+        }
     }
 }
 ----------------------------------------------------------------
@@ -353,11 +356,25 @@ public class Solution {
 *****************************************************************
 public static int hammingWeight(int n) {
 	int ones = 0;
+//这里一定是!=，>不行
     	while(n!=0) {
     		ones = ones + (n & 1);
     		n = n>>>1;
     	}
     	return ones;
+}
+//或者
+public class Solution {
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int res = 0;
+        while(n != 0) {
+	    //将最后一个1变为0	
+            n &= (n-1);
+            res++;
+        }
+        return res;
+    }
 }
 ----------------------------------------------------------------
 199.Binary Tree Right Side View

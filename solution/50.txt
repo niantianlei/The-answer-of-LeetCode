@@ -4,25 +4,50 @@ Given nums = [2, 7, 11, 15], target = 9,
 Because nums[0] + nums[1] = 2 + 7 = 9,
 return [0, 1].
 *************************
-public class Solution {
+class Solution {
     public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> map = new HashMap<>();
         int[] res = new int[2];
-        Map<Integer, Integer> map = new HashMap<>();
         for(int i = 0; i < nums.length; i++) {
-            map.put(nums[i], i);
-        }
-        for(int i = 0; i < nums.length; i++) {
-            if(map.containsKey(target - nums[i]) && i != map.get(target - nums[i])) {
-                res[0] = i;
-                res[1] = map.get(target - nums[i]);
+            if(map.containsKey(target - nums[i])) {
+                res[1] = i;
+                res[0] = map.get(target - nums[i]);
                 return res;
             }
+            map.put(nums[i], i);
         }
         return res;
     }
 }
 --------------------------------
 
+2. Add Two Numbers
+You are given two non-empty linked lists representing two non-negative integers. 
+The digits are stored in reverse order and each of their nodes contain a single digit.
+ Add the two numbers and return it as a linked list.
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 0 -> 8
+*****************************************************************
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        int flag = 0;
+        ListNode head = new ListNode(0);
+        ListNode p = head;
+        while(l1 != null || l2 != null || flag != 0) {
+            int sum = ((l1 == null)? 0 : l1.val) + ((l2 == null)? 0 : l2.val) + flag;
+            ListNode node = new ListNode(sum % 10);
+            flag = sum / 10;
+            head.next = node;
+            head = head.next;
+            if(l1 != null) l1 = l1.next;
+            if(l2 != null) l2 = l2.next;
+        }
+        return p.next;
+    }
+}
+----------------------------------------------------------------
 3.
 Given a string, find the length of the longest substring without repeating characters.
 Examples:
@@ -60,28 +85,22 @@ Note: "aba" is also a valid answer.
 class Solution {
     public String longestPalindrome(String s) {
         String res = "";
-        int currLength = 0;
-        for(int i=0;i<s.length();i++){
-            if(isPalindrome(s,i-currLength-1,i)){
-                res = s.substring(i-currLength-1,i+1);
-                currLength = currLength+2;
-            }
-            else if(isPalindrome(s,i-currLength,i)){
-                res = s.substring(i-currLength,i+1);
-                currLength = currLength+1;
-            }
+        for(int i = 0; i < s.length(); i++) {
+            String s1 = extend(s, i, i);    //长度为奇数
+            String s2 = extend(s, i, i + 1);//长度为偶数
+            res = s1.length() > res.length() ? s1 : res;
+            res = s2.length() > res.length() ? s2 : res;
         }
         return res;
     }
     
-    public boolean isPalindrome(String s, int begin, int end){
-        if(begin<0) return false;
-        while(begin<end){
-        	if(s.charAt(begin++)!=s.charAt(end--)) return false;
+    public String extend(String s, int i, int j) {
+        for(; i >= 0 && j < s.length(); i--, j++) {
+            if(s.charAt(i) != s.charAt(j)) break;
         }
-        return true;
+        return s.substring(i+1, j);
     }
-}
+} 
 ----------------------------------------------------
 
 7.Reverse Integer
@@ -109,7 +128,7 @@ public class Solution {
 public class Solution {
     public int myAtoi(String str) {
         if (str == null || str.length() == 0)
-            return 0;//
+            return 0;
         str = str.trim();
         char firstChar = str.charAt(0);
         int sign = 1, start = 0, len = str.length();
@@ -144,7 +163,7 @@ public class Solution {
         }
         int rev = 0;
         int y = x;
-        while(y >= 10) {
+        while(y >= 10) {//防溢出
             rev = rev * 10 + y % 10;
             y /= 10;
         }
@@ -152,7 +171,35 @@ public class Solution {
     }
 }
 --------------------------------
-
+11. Container With Most Water
+Given n non-negative integers a1, a2, ..., an, where each represents a point at coordinate (i, ai). n 
+vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, 
+which together with x-axis forms a container, such that the container contains the most water.
+题目半天才读懂，稍微翻译一下：
+在二维坐标系中，(i, ai) 表示 从 (i, 0) 到 (i, ai) 的一条线段，任意两条这样的线段和 x 轴组成一个木桶，
+找出能够盛水最多的木桶，返回其容积。
+****************************************************************************
+思路：两个指针向中间靠拢，左低于右，将左指针右移才能增加面积，所以右移左指针；同理，右低于左，左移右指针。
+class Solution {
+    public int maxArea(int[] height) {
+        if(height == null || height.length < 2) {
+            return 0;
+        }
+        int res = 0;
+        int left = 0, right = height.length - 1;
+        while(left < right) {
+            int temp = (right - left) * Math.min(height[left], height[right]);
+            if(temp > res) res = temp;
+            if(height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return res;
+    }
+}
+------------------------------------------------------------------------------
 14.Write a function to find the longest common prefix string amongst an array of strings.
 ****************************
 public class Solution {
@@ -162,7 +209,7 @@ public class Solution {
         }
         int min = strs[0].length();
         for(int i = 0; i < strs.length; i++) {
-            if( strs[i].length() < min ) min = strs[i].length();
+            if(strs[i].length() < min ) min = strs[i].length();
         }
         
         String s = "";
@@ -181,7 +228,87 @@ public class Solution {
     }
 }
 --------------------------------
-
+15. 3Sum
+For example, given array S = [-1, 0, 1, 2, -1, -4],
+A solution set is:
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+****************************************************************************
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new LinkedList<>(); 
+        for (int i = 0; i < nums.length-2; i++) {
+            if (i == 0 || (i > 0 && nums[i] != nums[i-1])) {
+                int lo = i+1, hi = nums.length-1, sum = 0 - nums[i];//转化成2sum问题    0-num[i]为和
+                while (lo < hi) {
+                    if (nums[lo] + nums[hi] == sum) {
+                        res.add(Arrays.asList(nums[i], nums[lo], nums[hi]));
+                        while (lo < hi && nums[lo] == nums[lo+1]) lo++;//去重
+                        while (lo < hi && nums[hi] == nums[hi-1]) hi--;
+                        lo++; hi--;
+                    } else if (nums[lo] + nums[hi] < sum) lo++;
+                    else hi--;
+               }
+            }
+        }
+        return res;
+    }
+}
+------------------------------------------------------------------------------
+16. 3Sum Closest
+Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+    For example, given array S = {-1 2 1 -4}, and target = 1.
+    The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+****************************************************************************
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        int result = nums[0] + nums[1] + nums[nums.length - 1];
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 2; i++) {
+            int start = i + 1, end = nums.length - 1;
+            while (start < end) {
+                int sum = nums[i] + nums[start] + nums[end];
+                if (sum > target) {
+                    end--;
+                } else {
+                    start++;
+                }
+                if (Math.abs(sum - target) < Math.abs(result - target)) {
+                    result = sum;
+                }
+            }
+        }
+        return result;
+    }
+}
+------------------------------------------------------------------------------
+19. Remove Nth Node From End of List
+   Given linked list: 1->2->3->4->5, and n = 2.
+   After removing the second node from the end, the linked list becomes 1->2->3->5.
+****************************************************************************
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode cur = head;
+        ListNode helper = new ListNode(0);
+        helper.next = head;
+        for(int i = 1; i < n; i++) {
+            if(cur.next == null) return head;
+            cur = cur.next;
+        }
+        ListNode pre = helper;
+        while(cur.next != null) {
+            pre = head;
+            head = head.next;
+            cur = cur.next;
+        }
+        pre.next = head.next;
+        return helper.next;
+    }
+}
+------------------------------------------------------------------------------
 20. Valid Parentheses
 Given a string containing just the characters '(', ')', '{', '}', '[' and ']', 
 determine if the input string is valid.
@@ -239,6 +366,82 @@ public class Solution {
     }
 }
 ----------------------------------------
+22. Generate Parentheses
+n=3
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+****************************************************************************
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        List<String> list = new ArrayList<String>();
+        backtrack(list, "", 0, 0, n);
+        return list;
+    }
+    
+    public void backtrack(List<String> list, String str, int open, int close, int max){
+        
+        if(str.length() == max*2){
+            list.add(str);
+            return;
+        }
+        if(open < max)
+            backtrack(list, str+"(", open+1, close, max);
+        if(close < open)
+            backtrack(list, str+")", open, close+1, max);
+    }
+}
+------------------------------------------------------------------------------
+24. Swap Nodes in Pairs
+Given 1->2->3->4, you should return the list as 2->1->4->3.
+****************************************************************************
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode helper = new ListNode(0);
+        ListNode pre = helper;
+        helper.next = head;
+        while(pre.next != null && pre.next.next != null) {
+            ListNode first = pre.next;
+            pre.next = first.next;
+            first.next = first.next.next;
+            pre.next.next = first;
+            pre = pre.next.next;
+        }
+        return helper.next;
+    }
+}
+------------------------------------------------------------------------------
+25. Reverse Nodes in k-Group
+******************************************************************************
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode curr = head;
+        int count = 0;
+        while (curr != null && count != k) { // find the k+1 node
+            curr = curr.next;
+            count++;
+        }
+        if (count == k) { // if k+1 node is found
+            curr = reverseKGroup(curr, k); // reverse list with k+1 node as head
+            // head - head-pointer to direct part, 
+            // curr - head-pointer to reversed part;
+            while (count-- > 0) { // reverse current k-group: 
+                ListNode tmp = head.next; // tmp - next head in direct part
+                head.next = curr; // preappending "direct" head to the reversed list 
+                curr = head; // move head of reversed part to a new node
+                head = tmp; // move "direct" head to the next node in direct part
+            }
+            head = curr;
+        }
+        return head;
+    }
+}
+------------------------------------------------------------------------------
 26. Remove Duplicates from Sorted Array
 Given input array nums = [1,1,2],
 Your function should return length = 2
@@ -297,6 +500,59 @@ public class Solution {
     }
 }
 ------------------------------------------
+34. Search for a Range
+Given an array of integers sorted in ascending order, find the starting and ending position of a given target value.
+Your algorithm's runtime complexity must be in the order of O(log n).
+If the target is not found in the array, return [-1, -1].
+
+For example,
+Given [5, 7, 7, 8, 8, 10] and target value 8,
+return [3, 4].
+****************************************************************************
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int[] res = {-1,-1};
+        if(nums == null || nums.length == 0) {
+            return res;
+        }
+        res[0] = left(nums, target);
+        res[1] = right(nums, target);
+        return res;
+    }
+    public int left(int[] nums, int target) {
+        int lo = 0, hi = nums.length - 1;
+        while(lo <= hi) {
+            int mid = lo + (hi -lo) / 2;
+            if(nums[mid] >= target) {
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        if(lo <= nums.length - 1 && nums[lo] == target) {
+            return lo;
+        } else {
+            return -1;
+        }
+    }
+    public int right(int[] nums, int target) {
+        int lo = 0, hi = nums.length - 1;
+        while(lo <= hi) {
+            int mid = lo + (hi -lo) / 2;
+            if(nums[mid] <= target) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        if(hi >= 0 && nums[hi] == target) {
+            return hi;
+        } else {
+            return -1;
+        }
+    }
+}
+------------------------------------------------------------------------------
 35. Search Insert Position
 
 Here are few examples.
@@ -332,6 +588,32 @@ public int searchInsert(int[] nums, int target) {
     return low;
 }
 --------------------------------------------
+36. Valid Sudoku
+Determine if a Sudoku is valid, according to: Sudoku Puzzles - The Rules.
+The Sudoku board could be partially filled, where empty cells are filled with the character '.'.
+A partially filled sudoku which is valid.
+*******************************************
+public class Solution {
+    public boolean isValidSudoku(char[][] board) {
+            for(int i = 0; i<9; i++){
+            HashSet<Character> rows = new HashSet<Character>();
+            HashSet<Character> columns = new HashSet<Character>();
+            HashSet<Character> cube = new HashSet<Character>();
+            for (int j = 0; j < 9;j++){
+                if(board[i][j]!='.' && !rows.add(board[i][j]))
+                    return false;
+                if(board[j][i]!='.' && !columns.add(board[j][i]))
+                    return false;
+                int RowIndex = 3*(i/3);
+                int ColIndex = 3*(i%3);
+                if(board[RowIndex + j/3][ColIndex + j%3]!='.' && !cube.add(board[RowIndex + j/3][ColIndex + j%3]))
+                    return false;
+            }
+        }
+        return true;
+    }
+}
+--------------------------------------------
 38. Count and Say
 The count-and-say sequence is the sequence of integers with the first five terms as following:
 1.     1
@@ -339,6 +621,10 @@ The count-and-say sequence is the sequence of integers with the first five terms
 3.     21
 4.     1211
 5.     111221
+
+1 is read off as "one 1" or 11.
+11 is read off as "two 1s" or 21.
+21 is read off as "one 2, then one 1" or 1211.
 *******************************************
 public class Solution {
     public String countAndSay(int n) {
@@ -367,6 +653,20 @@ public class Solution {
 }
 --------------------------------------------
 39. Combination Sum
+Given a set of candidate numbers (C) (without duplicates) and a target number (T), 
+find all unique combinations in C where the candidate numbers sums to T.
+
+The same repeated number may be chosen from C unlimited number of times.
+
+Note:
+All numbers (including target) will be positive integers.
+The solution set must not contain duplicate combinations.
+For example, given candidate set [2, 3, 6, 7] and target 7, 
+A solution set is: 
+[
+  [7],
+  [2, 2, 3]
+]
 *********************************************
 class Solution {
     public List<List<Integer>> combinationSum(int[] nums, int target) {
@@ -389,6 +689,57 @@ class Solution {
     }
 }
 -----------------------------------------------
+40. Combination Sum II
+Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+
+Each number in C may only be used once in the combination.
+
+Note:
+All numbers (including target) will be positive integers.
+The solution set must not contain duplicate combinations.
+For example, given candidate set [10, 1, 2, 7, 6, 1, 5] and target 8, 
+A solution set is: 
+[
+  [1, 7],
+  [1, 2, 5],
+  [2, 6],
+  [1, 1, 6]
+]
+**************************************************************
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        Arrays.sort(candidates);
+        helper(res, new ArrayList<Integer>(), candidates, target, 0);
+        return res;
+    }
+    public void helper(List<List<Integer>> res, List<Integer> list, int[] nums, int target, int start) {
+        if(target == 0) {
+            res.add(new ArrayList<Integer>(list));
+        } else if (target > 0 && start < nums.length) {
+            for(int i = start; i < nums.length; i++) {
+                if(i > start && nums[i] == nums[i-1]) continue; //避免重复。
+                list.add(nums[i]);
+                helper(res, list, nums, target - nums[i], i + 1);
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+}
+----------------------------------------------------------------
+43. Multiply Strings
+Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2
+****************************************************************************
+import java.math.*;
+class Solution {
+    public String multiply(String num1, String num2) {
+        BigInteger n1 = new BigInteger(num1);
+        BigInteger n2 = new BigInteger(num2);
+        BigInteger n = n1.multiply(n2);
+        return n.toString();
+    }
+}
+------------------------------------------------------------------------------
 46. Permutations
 Given a collection of distinct numbers, return all possible permutations.
 For example,
@@ -426,6 +777,18 @@ public class Solution {
 ------------------------------------------
 
 48. Rotate Image
+Given input matrix = 
+[
+  [1,2,3],
+  [4,5,6],
+  [7,8,9]
+],
+rotate the input matrix in-place such that it becomes:
+[
+  [7,4,1],
+  [8,5,2],
+  [9,6,3]
+]
 *******************************************
 public class Solution {
     public void rotate(int[][] matrix) {
@@ -474,9 +837,11 @@ public class Solution {
 ***************************************
 class Solution {
     public double myPow(double x, int n) {
-        if (n < 0) return 1 / (x*myPow(x, -(++n)));
-        else if (n == 0) return 1;
+        if(x == 0.0 && n < 0) return 0.0;
+        if(n == 0) return 1;
+        if (n < 0) return myPow(1/x,-n-1)/x;  
         else return (n % 2 == 0) ? myPow(x*x, n / 2) : x*myPow(x*x, n / 2);
     }
 }
+
 ------------------------------------------

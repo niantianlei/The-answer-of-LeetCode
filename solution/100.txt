@@ -18,7 +18,26 @@ public class Solution {
     }
 }
 -------------------------------------------------
-
+55. Jump Game
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+Each element in the array represents your maximum jump length at that position.
+Determine if you are able to reach the last index.
+For example:
+A = [2,3,1,1,4], return true.
+A = [3,2,1,0,4], return false.
+***********************************************
+class Solution {
+    public boolean canJump(int[] nums) {
+        int max = 0;
+        for(int i = 0; i < nums.length; i++) {
+            max = Math.max(max, nums[i] + i);//达到的最远坐标
+            if(max >= nums.length-1) return true;
+            if(max <= i) return false;//说明最远只能到达i
+        }
+        return true;
+    }
+}
+-------------------------------------------------
 58. Length of Last Word
 Given a string s consists of upper/lower-case alphabets and empty space characters ' ', 
 return the length of last word in the string.
@@ -35,6 +54,77 @@ public class Solution {
     }
 }
 -------------------------------------------------
+62. Unique Paths
+A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
+
+The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+
+How many possible unique paths are there?
+***********************************************
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        for(int i = 0; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for(int j = 0; j < n; j++) {
+            dp[0][j] = 1;
+        }
+        for(int i = 1; i < m; i++) {
+            for(int j = 1; j < n; j++) {
+                dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        }
+        return dp[m-1][n-1];
+    }
+}
+-------------------------------------------------
+63. Unique Paths II
+
+Follow up for "Unique Paths":
+Now consider if some obstacles are added to the grids. How many unique paths would there be?
+An obstacle and empty space is marked as 1 and 0 respectively in the grid.
+
+For example,
+There is one obstacle in the middle of a 3x3 grid as illustrated below.
+
+[
+  [0,0,0],
+  [0,1,0],
+  [0,0,0]
+]
+The total number of unique paths is 2.
+***********************************************
+class Solution {
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m = obstacleGrid.length, n = obstacleGrid[0].length;
+        int[][] dp = new int[m][n];
+        if(obstacleGrid[0][0] == 1) {
+            return 0;
+        }
+        dp[0][0] = 1;
+        for(int i = 1; i < m; i++) {
+            if(dp[i-1][0] == 0 || obstacleGrid[i][0] == 1) dp[i][0] = 0;
+            else dp[i][0] = 1;
+        }
+        for(int i = 1; i < n; i++) {
+            if(dp[0][i-1] == 0 || obstacleGrid[0][i] == 1) dp[0][i] = 0;
+            else dp[0][i] = 1;
+        }
+        for(int i = 1; i < m; i++) {
+            for(int j = 1; j < n; j++) {
+                if(obstacleGrid[i][j] == 1) {
+                    dp[i][j] = 0;
+                } else {
+                    dp[i][j] = dp[i-1][j] + dp[i][j-1];
+                }
+                
+            }
+        }
+        return dp[m-1][n-1];
+    }
+}
+-------------------------------------------------
 64. Minimum Path Sum
 Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right 
 which minimizes the sum of all numbers along its path.
@@ -42,14 +132,20 @@ which minimizes the sum of all numbers along its path.
 class Solution {
     public int minPathSum(int[][] grid) {
         int m = grid.length, n = grid[0].length;
-        for(int i = 0; i < m; i++){
-            for(int j = 0; j < n; j++){
-            if(i == 0 && j != 0) grid[i][j] += grid[i][j-1];
-            if(i != 0 && j == 0) grid[i][j] += grid[i-1][j];
-            if (i != 0 && j != 0) grid[i][j] += Math.min(grid[i-1][j], grid[i][j-1]);
+        int[][] dp = new int[m][n];
+        dp[0][0] = grid[0][0];
+        for(int i = 1; i < m; i++) {
+            dp[i][0] = dp[i-1][0] + grid[i][0];
+        }
+        for(int j = 1; j < n; j++) {
+            dp[0][j] = dp[0][j-1] + grid[0][j];
+        }
+        for(int i = 1; i < m; i++){
+            for(int j = 1; j < n; j++){
+                dp[i][j] = Math.min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
             }
         }
-        return grid[m-1][n-1];
+        return dp[m-1][n-1];
     }
 }
 -------------------------------------------------
@@ -73,7 +169,6 @@ public class Solution {
     }
 }
 -------------------------------------------------
-
 67. Add Binary
 Given two binary strings, return their sum (also a binary string).
 
@@ -102,7 +197,6 @@ public class Solution {
     }
 }
 -------------------------------------------------
-
 69. Sqrt(x)
 Implement int sqrt(int x).
 Compute and return the square root of x.
@@ -127,20 +221,197 @@ public class Solution {
     }
 }
 -------------------------------------------------
-
 70. Climbing Stairs
 You are climbing a stair case. It takes n steps to reach to the top.
 Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
 *************************************************
 public class Solution {
     public int climbStairs(int n) {
-        int a = 1, b = 1;
-        while (n-- > 0) {
-            b = b + a;
-            a = b - a;
+        int a = 1, b = 2, c = 0;
+        if(n == 0) {
+            return 0;
+        } else if (n == 1 || n == 2) {
+            return n;
+        } else {
+            for(int i = 3; i <= n; i++) {
+                c = a + b;
+                a = b;
+                b = c;
+            }
+            return c;
         }
-           
-        return a;
+    }
+}
+------------------------------------------------------
+73. Set Matrix Zeroes
+Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in place.
+*************************************************
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        List<Integer> list = new ArrayList<>();
+        for(int i = 0; i < matrix.length; i++) {
+            for(int j = 0; j < matrix[0].length; j++) {
+                if(matrix[i][j] == 0) {
+                    list.add(i);
+                    list.add(j);
+                }
+            }
+        }
+        while(!list.isEmpty()) {
+            int i = list.remove(0);
+            int j = list.remove(0);
+            for(int k1 = 0; k1 < matrix.length; k1++) {
+                matrix[k1][j] = 0;
+            }
+            for(int k2 = 0; k2 < matrix[0].length; k2++) {
+                matrix[i][k2] = 0;
+            }
+        }
+    }
+}
+------------------------------------------------------
+74. Search a 2D Matrix
+Consider the following matrix:
+
+[
+  [1,   3,  5,  7],
+  [10, 11, 16, 20],
+  [23, 30, 34, 50]
+]
+Given target = 3, return true.
+*************************************************
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix == null || matrix.length == 0 || matrix[0].length == 0) return false;
+        int i = 0, j = matrix[0].length-1;
+        while(i <= matrix.length-1 && j >= 0) {
+            if(matrix[i][j] < target) {
+                i++;
+            } else if (matrix[i][j] == target) {
+                return true;
+            } else {
+                j--;
+            }
+        }
+        return false;
+    }
+}
+------------------------------------------------------
+77. Combinations
+Given two integers n and k, return all possible combinations of k numbers out of 1 ... n.
+For example,
+If n = 4 and k = 2, a solution is:
+
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+*************************************************
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> res = new LinkedList<>();
+        helper(res, new LinkedList<Integer>(), 1, n, k);
+        return res;
+    }
+    public void helper(List<List<Integer>> res, LinkedList<Integer> list, int start, int n, int k) {
+        if(k == 0) {
+            res.add(new LinkedList<Integer>(list));
+        } else if(k > 0){
+            for(int i = start; i <= n; i++) {
+                list.add(i);
+                helper(res, list, i+1, n, k-1);
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+}
+------------------------------------------------------
+78. Subsets
+Given a set of distinct integers, nums, return all possible subsets (the power set).
+Note: The solution set must not contain duplicate subsets.
+For example,
+If nums = [1,2,3], a solution is:
+
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+*************************************************
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        Arrays.sort(nums);
+        helper(res, new ArrayList<Integer>(), nums, 0);
+        return res;
+    }
+    public void helper(List<List<Integer>> res, List<Integer> list, int[] nums, int start) {
+        res.add(new ArrayList<Integer>(list));
+        for(int i = start; i < nums.length; i++) {
+            list.add(nums[i]);
+            helper(res, list, nums, i+1);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+------------------------------------------------------
+80. Remove Duplicates from Sorted Array II
+Follow up for "Remove Duplicates":
+What if duplicates are allowed at most twice?
+For example,
+Given sorted array nums = [1,1,1,2,2,3],
+
+Your function should return length = 5, with the first five elements of nums being 1, 1, 2, 2 and 3. 
+It doesn't matter what you leave beyond the new length.
+*************************************************
+class Solution {
+    public int removeDuplicates(int[] nums) {
+        int k = 2;     //最多保留k个   更有普适性
+        if(nums == null || nums.length <= k) {
+            return nums == null? 0 : nums.length;
+        }
+        int slow = k;
+        for(int fast = k; fast < nums.length; fast++) {
+            if(nums[fast] != nums[slow - k]) {
+                nums[slow++] = nums[fast];
+            }
+        }
+        return slow;
+    }
+}
+------------------------------------------------------
+82. Remove Duplicates from Sorted List II
+Given 1->2->3->3->4->4->5, return 1->2->5.
+Given 1->1->1->2->3, return 2->3.
+*************************************************
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode helper = new ListNode(0);
+        helper.next = head;
+        ListNode pre = helper;
+        ListNode cur = head;
+        while(cur != null) {
+            while(cur.next != null && cur.next.val == cur.val) {
+                cur = cur.next;
+            }
+            if(pre.next == cur) {
+                pre = pre.next;
+            } else {
+                pre.next = cur.next;
+            }
+            cur = cur.next;
+        }
+        return helper.next;
     }
 }
 ------------------------------------------------------
@@ -149,13 +420,12 @@ public class Solution {
 public class Solution {
     public ListNode deleteDuplicates(ListNode head) {
         if(head == null || head.next == null) return head;
-        for(ListNode node = head; node != null; ) {
-            if(node.next == null) break;
-            if(node.next.val == node.val) {
-                node.next = node.next.next;
-            } else {
-                node = node.next;
+        ListNode cur = head;
+        while(cur != null) {
+            while(cur.next != null && cur.val == cur.next.val) {
+                cur.next = cur.next.next;
             }
+            cur = cur.next;
         }
         return head;
     }
@@ -173,6 +443,93 @@ public class Solution {
         while(j >= 0) {
             nums1[k--] = nums2[j--];
         }
+    }
+}
+------------------------------------------------------
+90. Subsets II
+Given a collection of integers that might contain duplicates, nums, return all possible subsets (the power set).
+Note: The solution set must not contain duplicate subsets.
+For example,
+If nums = [1,2,2], a solution is:
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+*******************************************************
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> res = new LinkedList<>();
+        Arrays.sort(nums);
+        helper(res, new LinkedList<Integer>(), nums, 0);
+        return res;
+    }
+    public void helper(List<List<Integer>> res, List<Integer> list, int[] nums, int start) {
+        res.add(new ArrayList<Integer>(list));
+        for(int i = start; i < nums.length; i++) {
+            if(i > start && nums[i] == nums[i-1]) continue;
+            list.add(nums[i]);
+            helper(res, list, nums, i + 1);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+--------------------------------------------------------
+94. Binary Tree Inorder Traversal
+********************************************************
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> list = new LinkedList<>();
+        helper(list, root);
+        return list;
+    }
+    public void helper(List<Integer> list, TreeNode root) {
+        if(root == null) return;
+        helper(list, root.left);
+        list.add(root.val);
+        helper(list, root.right);
+    }
+}
+-----------------------------------------------------------
+96. Unique Binary Search Trees
+Given n, how many structurally unique BST's (binary search trees) that store values 1...n?
+********************************************************
+求可行的二叉查找树的数量，其实二叉查找树可以任意取根，只要满足中序遍历有序的要求就可以。
+从处理子问题的角度来看，选取一个结点为根，就把结点切成左右子树，以这个结点为根的可行二叉树数量就是
+左右子树可行二叉树数量的乘积，所以总的数量是将以所有结点为根的可行结果累加起来
+class Solution {
+    public int numTrees(int n) {
+        int[] dp = new int[1+n];
+        dp[0] = dp[1] = 1;
+        for(int i = 2; i <= n; i++) {
+            for(int j = 1; j <= i; j++) {
+                dp[i] += dp[j-1] * dp[i-j];
+            }
+        }
+        return dp[n];
+        
+    }
+}
+-----------------------------------------------------------
+98. Validate Binary Search Tree
+Given a binary tree, determine if it is a valid binary search tree (BST).
+Assume a BST is defined as follows:
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+*************************************************
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        //需要考虑边界情况所以不能用Integer
+        return isValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    public boolean isValidBST(TreeNode root, long lo, long hi) {
+        if(root == null) return true;
+        if(root.val <= lo || root.val >= hi) return false;
+        return isValidBST(root.left, lo, root.val) && isValidBST(root.right, root.val, hi);
     }
 }
 ------------------------------------------------------

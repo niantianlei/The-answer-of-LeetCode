@@ -5,10 +5,9 @@ For example, given the range [5, 7], you should return 4.
 *************************************************************************
 public class Solution {
     public int rangeBitwiseAnd(int m, int n) {
-        while(m < n) {
-            n &= (n - 1);
-        }
-        return n;
+        int r=Integer.MAX_VALUE;
+        while((m&r)!=(n&r))  r=r<<1;
+        return n&r;
     }
 }
 --------------------------------------------------------------------------
@@ -16,10 +15,10 @@ public class Solution {
 202. Happy Number
 Example: 19 is a happy number
 
-12 + 92 = 82//1的平方
-82 + 22 = 68
-62 + 82 = 100
-12 + 02 + 02 = 1
+1^2 + 9^2 = 82//1的平方
+8^2 + 2^2 = 68
+6^2 + 8^2 = 100
+1^2 + 0^2 + 0^2 = 1
 *************************************************************************
 public class Solution {
     public boolean isHappy(int n) {
@@ -104,10 +103,48 @@ public class Solution {
         return true;
     }
 }
+//或者用两个数组(ASCII码只有256个字符)。思想是：用数组（哈希表）保存每个字符最后出现的位置
+public class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        int[] m = new int[256];
+        int[] n = new int[256];
+        for(int i = 0; i < s.length(); i++) {
+            if(m[s.charAt(i)] != n[t.charAt(i)]) return false;
+            m[s.charAt(i)] = i + 1;
+            n[t.charAt(i)] = i + 1;
+        }
+        return true;
+    }
+}
+//或
+public class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        Map<Character,Character> map = new HashMap<>();
+        Set<Character> set= new HashSet<>();
+        
+        for(int i = 0; i < s.length(); i++) {
+            if(!map.containsKey(s.charAt(i))) {
+                if(set.contains(t.charAt(i))) {
+                    return false;
+                } else {
+                    map.put(s.charAt(i), t.charAt(i));
+                    set.add(t.charAt(i));
+                }
+                
+            } else {
+                if(map.get(s.charAt(i)) != t.charAt(i)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
 --------------------------------------------------------------------------
 
 206. Reverse Linked List
 *************************************************************************
+//反转双向链表
 非递归方法
 public ListNode reverseList(ListNode head) {
     ListNode prev = null;
@@ -115,6 +152,7 @@ public ListNode reverseList(ListNode head) {
     while (curr != null) {
         ListNode nextTemp = curr.next;
         curr.next = prev;
+	curr.prev = next;   //反转双向链表,仅加这一行
         prev = curr;
         curr = nextTemp;
     }
@@ -124,8 +162,8 @@ public ListNode reverseList(ListNode head) {
 public ListNode reverseList(ListNode head) {
     if (head == null || head.next == null) return head;
     ListNode p = reverseList(head.next);
-    head.next.next = head;
-    head.next = null;
+    head.next.next = head;    //反转结点
+    head.next = null;         //第一个结点反转后，后继为null
     return p;
 }
 --------------------------------------------------------------------------
@@ -138,13 +176,13 @@ the subarray [4,3] has the minimal length under the problem constraint.
 *************************************************************************
 public class Solution {
 	public int minSubArrayLen(int s, int[] nums) {
-		if(nums == null || nums.length ==0) return 0;
-        int i = 0, j = 0, sum = 0, min = Integer.MAX_VALUE;
-        while(j < nums.length) {
-            sum += nums[j++];
-            while(sum >= s) {
-                min = Math.min(min, j - i);
-                sum -= nums[i++];
+	    if(nums == null || nums.length == 0) return 0;
+        	int i = 0, j = 0, sum = 0, min = Integer.MAX_VALUE;
+        	while(j < nums.length) {
+         	    sum += nums[j++];
+         	    while(sum >= s) {
+         	        min = Math.min(min, j - i);
+          	        sum -= nums[i++];
             }
         }
         return min == Integer.MAX_VALUE ? 0 : min;
@@ -229,15 +267,16 @@ public class Solution {
         return ans;
     }
     public void combination(List<List<Integer>> ans, List<Integer> list, int k, int start, int n) {
-        if(list.size() == k && n == 0) {
+        if(k == 0 && n == 0) {
             ans.add(new LinkedList<>(list));
-            return;
+        } else if (k > 0 && n > 0) {
+            for(int i = start; i < 10; i++) {
+                list.add(i);
+                combination(ans, list, k - 1, i + 1, n - i);
+                list.remove(list.size()-1);
+            }
         }
-        for(int i = start; i < 10; i++) {
-            list.add(i);
-            combination(ans, list, k, i + 1, n - i);
-            list.remove(list.size() - 1);
-        }
+        
     }
 }
 --------------------------------------------------------------------------
@@ -274,7 +313,34 @@ public class Solution {
     }
 }
 --------------------------------------------------------------------------
-
+221. Maximal Square
+Given a 2D binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
+For example, given the following matrix:
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+Return 4.
+*************************************************************************
+class Solution {
+    public int maximalSquare(char[][] matrix) {
+        if(matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        int rows = matrix.length, cols = matrix[0].length, res = 0;
+        int[][] dp = new int[rows+1][cols+1];
+        for(int i = 1; i <= rows; i++) {
+            for(int j = 1; j <= cols; j++) {
+                if(matrix[i-1][j-1] == '1') {
+                    dp[i][j] = Math.min(Math.min(dp[i-1][j], dp[i][j-1]), dp[i-1][j-1]) + 1;
+                    res = Math.max(res, dp[i][j]);
+                }
+            }
+        }
+        return res * res;
+    }
+}
+--------------------------------------------------------------------------
 222. Count Complete Tree Nodes
 设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树
 *************************************************************************
@@ -292,6 +358,10 @@ class Solution {
         return 1 + height(root.left);
     }
 }
+
+//如果不是完全二叉树的话
+if(root == null) return 0;
+return 1 + countNodes(root.left) + countNodes(root.right);
 --------------------------------------------------------------------------
 225. Implement Stack using Queues
 两个队列实现栈——入栈，直接进q1，出栈，把q1除最后一个元素外全部转移到队q2中,然后把刚才剩下q1中的那个元素出队列。之后把q2中的全部元素转移回q1中
@@ -330,6 +400,83 @@ public class MyStack {
         return queue.isEmpty();
     }
 }
+//【解法二：用两个队列，push: O(1)，pop: O(n)，top: O(n)】
+public class MyStack {
+    Queue<Integer> q1 = new LinkedList<>();
+    Queue<Integer> q2 = new LinkedList<>();
+    /** Initialize your data structure here. */
+    public MyStack() {
+        
+    }
+    
+    /** Push element x onto stack. */
+    public void push(int x) {
+        q1.offer(x);
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    public int pop() {
+        while(q1.size() > 1) {
+            q2.offer(q1.remove());
+        }
+        int temp = q1.remove();
+        while(!q2.isEmpty()) {
+            q1.offer(q2.remove());
+        }
+        return temp;
+    }
+    
+    public int top() {
+        while(q1.size() > 1) {
+            q2.offer(q1.remove());
+        }
+        int temp = q1.peek();
+        q2.offer(q1.remove());
+        while(!q2.isEmpty()) {
+            q1.offer(q2.remove());
+        }
+        return temp;
+    }
+    
+    /** Returns whether the stack is empty. */
+    public boolean empty() {
+        return q1.isEmpty();
+    }
+}
+//【解法二：用两个队列，push: O(n)，pop: O(1)，top: O(1)】将后添加的元素放到q1的最前端
+public class MyStack {
+    Queue<Integer> q1 = new LinkedList<>();
+    Queue<Integer> q2 = new LinkedList<>();
+    /** Initialize your data structure here. */
+    public MyStack() {
+        
+    }
+    
+    /** Push element x onto stack. */
+    public void push(int x) {
+        q2.offer(x);
+        while(!q1.isEmpty()) {
+            q2.offer(q1.poll());
+        }
+        while(!q2.isEmpty()) {
+            q1.offer(q2.poll());
+        }
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    public int pop() {
+        return q1.poll();
+    }
+    
+    public int top() {
+        return q1.peek();
+    }
+    
+    /** Returns whether the stack is empty. */
+    public boolean empty() {
+        return q1.isEmpty();
+    }
+}
 --------------------------------------------------------------------------
 226. Invert Binary Tree
 Invert a binary tree.
@@ -353,6 +500,52 @@ public class Solution {
         root.left = invertTree(root.right);
         root.right = invertTree(tmp);
         return root;
+    }
+}
+--------------------------------------------------------------------------
+227. Basic Calculator II
+Implement a basic calculator to evaluate a simple expression string.
+
+The expression string contains only non-negative integers, +, -, *, / operators and empty spaces . The integer division should truncate toward zero.
+
+You may assume that the given expression is always valid.
+
+Some examples:
+"3+2*2" = 7
+" 3/2 " = 1
+" 3+5 / 2 " = 5
+Note: Do not use the eval built-in library function.
+*************************************************************************
+class Solution {
+    public int calculate(String s) {
+        if(s == null || s.length() == 0) return 0;
+        int len = s.length();
+        Stack<Integer> stack = new Stack<>();
+        int num = 0;
+        char sign = '+';
+        for(int i = 0; i < len; i++) {
+            if(Character.isDigit(s.charAt(i))) {
+                num = num * 10 + s.charAt(i) - '0';
+            }
+            if(!Character.isDigit(s.charAt(i)) && ' ' != s.charAt(i) || i == len - 1) {
+                if(sign == '-') {
+                    stack.push(-num);
+                } else if (sign == '+') {
+                    stack.push(num);
+                } else if (sign == '*') {
+                    stack.push(stack.pop() * num);
+                } else if (sign == '/') {
+                    stack.push(stack.pop() / num);
+                }
+                sign = s.charAt(i);
+                num = 0;
+            }
+        }
+        int res = 0;
+        for(int i : stack) {
+            res += i;
+        }
+        return res;
     }
 }
 --------------------------------------------------------------------------
@@ -421,7 +614,27 @@ public class Solution {
     }
 }
 --------------------------------------------------------------------------
+230. Kth Smallest Element in a BST
+*************************************************************************
+class Solution {
+    public int kthSmallest(TreeNode root, int k) {
+        Stack<TreeNode> stack = new Stack<>();
 
+        while(!stack.isEmpty() || root != null) {
+            if(root != null) {
+                stack.push(root);
+                root = root.left;
+            } else {
+                TreeNode node = stack.pop();
+                k--;
+                if(k == 0) return node.val;
+                root = node.right;
+            }
+        }
+        return 0;
+    }
+}
+--------------------------------------------------------------------------
 231.Power of Two
 Given an integer, write a function to determine if it is a power of two.
 *************************************************************************
@@ -431,6 +644,14 @@ public class Solution {
         while(n%2==0) n/=2;
         return (n==1);
         //return n>0 && Integer.bitCount(n) == 1;
+    }
+}
+或
+public class Solution {
+    public boolean isPowerOfTwo(int n) {
+        if(n <= 0) return false;
+	//将最后一个1变为0
+        return (n&(n-1)) == 0;
     }
 }
 --------------------------------------------------------------------------
@@ -476,21 +697,27 @@ For example:
 Given n = 13,
 Return 6, because digit 1 occurred in the following numbers: 1, 10, 11, 12, 13.
 *************************************************************************
+//比如534，个位出现53+1=54个；十位出现5*10+10=60个；将3变为1，则出现5*10+5=55个，将3变为0，则出现5*10。
 public class Solution {
     public int countDigitOne(int n) {
-        int ones = 0;
-        for (long m = 1; m <= n; m *= 10)
-            ones += (n/m + 8) / 10 * m + (n/m % 10 == 1 ? n%m + 1 : 0);
-        return ones;
+        if(n <= 0) return 0;
+        int helper = n;
+        int res = 0;
+        int base = 1;
+        while(helper > 0) {
+            int weight = helper % 10;
+            helper /= 10;
+            res += base * helper;
+            if(weight == 1) {
+                res += n % base + 1;
+            } else if (weight > 1) {
+                res += base;
+            }
+            base *= 10;
+        }
+        return res;
     }
 }
-说明：
-以算百位上1为例子:   假设百位上是0, 1, 和 >=2 三种情况: 
-    case 1: n=3141092, a= 31410, b=92. 计算百位上1的个数应该为 3141 *100 次.
-    case 2: n=3141192, a= 31411, b=92. 计算百位上1的个数应该为 3141 *100 + (92+1) 次. 
-    case 3: n=3141592, a= 31415, b=92. 计算百位上1的个数应该为 (3141+1) *100 次. 
-以上三种情况可以用 一个公式概括:
-(a + 8) / 10 * m + (a % 10 == 1) * (b + 1)
 --------------------------------------------------------------------------
 234. Palindrome Linked List
 Given a singly linked list, determine if it is a palindrome.
@@ -536,9 +763,9 @@ public class Solution {
 public class Solution {
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         while ((root.val - p.val) * (root.val - q.val) > 0)
-        root = p.val < root.val ? root.left : root.right;
+            root = p.val < root.val ? root.left : root.right;
         return root;
-        //递归
+        //递归方法
         /*if(root.val<Math.min(p.val,q.val)) return lowestCommonAncestor(root.right,p,q);
         if(root.val>Math.max(p.val,q.val)) return lowestCommonAncestor(root.left,p,q);
         return root;*/
@@ -550,10 +777,15 @@ public class Solution {
 *************************************************************************
 public class Solution {
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+	//发现目标节点则通过返回值标记该子树发现了某个目标结点
         if(root == null || root == p || root == q)  return root;
+	//查看左子树中是否有目标结点，没有为null
         TreeNode left = lowestCommonAncestor(root.left, p, q);
+	//查看右子树是否有目标节点，没有为null
         TreeNode right = lowestCommonAncestor(root.right, p, q);
+	//都不为空，说明做右子树都有目标结点，则公共祖先就是本身
         if(left != null && right != null)   return root;
+	//如果发现了目标节点，则继续向上标记为该目标节点
         return left != null ? left : right;
     }
 }
@@ -612,8 +844,22 @@ Window position                Max
  1  3  -1  -3  5 [3  6  7]      7
 Therefore, return the max sliding window as [3,3,5,5,6,7].
 *************************************************************************
+
 public class Solution {
     public int[] maxSlidingWindow(int[] nums, int k) {
+	//O(n2)解法
+	/*if(nums == null || nums.length == 0) {
+            return new int[0];
+        }
+        int[] res = new int[nums.length - k + 1];
+        for(int i = 0; i < nums.length - k + 1; i++) {
+            int max = Integer.MIN_VALUE;
+            for(int j = i; j < i + k; j++) {
+                max = Math.max(nums[j], max);
+            }
+            res[i] = max;
+        }
+        return res;*/
         if(nums == null || nums.length == 0) {
             return new int[0];
         }
@@ -625,6 +871,7 @@ public class Solution {
             while(!queue.isEmpty() && queue.peek() < i - k + 1) {
                 queue.poll();
             }
+		// 把队列尾部所有比新数小的都扔掉，保证队列是降序的
             while(!queue.isEmpty() && nums[queue.peekLast()] < nums[i]) {
                 queue.pollLast();
             }
@@ -634,6 +881,42 @@ public class Solution {
             }
         }
         return a;
+    }
+}
+--------------------------------------------------------------------------
+240. Search a 2D Matrix II
+Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+Integers in each row are sorted in ascending from left to right.
+Integers in each column are sorted in ascending from top to bottom.
+For example,
+Consider the following matrix:
+[
+  [1,   4,  7, 11, 15],
+  [2,   5,  8, 12, 19],
+  [3,   6,  9, 16, 22],
+  [10, 13, 14, 17, 24],
+  [18, 21, 23, 26, 30]
+]
+Given target = 5, return true.
+Given target = 20, return false.
+*************************************************************************
+public class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false;
+        }
+        int row = 0;
+        int col = matrix[0].length-1;
+        while(col >= 0 && row <= matrix.length-1) {
+            if(target == matrix[row][col]) {
+                return true;
+            } else if(target < matrix[row][col]) {
+                col--;
+            } else if(target > matrix[row][col]) {
+                row++;
+            }
+        }
+        return false;
     }
 }
 --------------------------------------------------------------------------

@@ -43,8 +43,71 @@ public class Solution {
         return wrapList;
     }
 }
----------------------------------------------
+2017.10.16更新
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> list = new LinkedList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        if(root == null) return list;
+        
+        queue.offer(root);
+        while(!queue.isEmpty()) {
+            int num = queue.size();
+            List<Integer> subList = new LinkedList<>();
+            for(int i = 0; i < num; i++) {
+                TreeNode node = queue.poll();
+                if(node.left != null) queue.offer(node.left);
+                if(node.right != null) queue.offer(node.right);
+                subList.add(node.val);
+            }
+            list.add(subList);
+        }
+        return list;
+    }
+}
 
+---------------------------------------------
+103. Binary Tree Zigzag Level Order Traversal
+Given a binary tree, return the zigzag level order traversal of its nodes' values. 
+(ie, from left to right, then right to left for the next level and alternate between).
+For example:
+Given binary tree [3,9,20,null,null,15,7],
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its zigzag level order traversal as:
+[
+  [3],
+  [20,9],
+  [15,7]
+]
+********************************************
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> list = new LinkedList<>();
+        if(root == null) return list;
+        boolean flag = true;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()) {
+            LinkedList<Integer> subList = new LinkedList<>();
+            int size = queue.size();
+            for(int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                if(node.left != null) queue.offer(node.left);
+                if(node.right != null) queue.offer(node.right);
+                if(flag == true) subList.add(node.val);
+                else subList.addFirst(node.val);
+            }
+            flag = (flag == true)? false:true;
+            list.add(subList);
+        }
+        return list;
+    }
+}
+---------------------------------------------
 104. Maximum Depth of Binary Tree
 ********************************************
 /**
@@ -63,7 +126,55 @@ public class Solution {
     }
 }
 ---------------------------------------------
-
+105. Construct Binary Tree from Preorder and Inorder Traversal
+********************************************
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return helper(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+    }
+    public TreeNode helper(int[] pre, int preStart, int preEnd, int[] in, int inStart, int inEnd) {
+        if(preStart > preEnd || inStart > inEnd) return null;
+        int rootVal = pre[preStart];
+        int rootIndex = 0;
+        for(int i = inStart; i <= inEnd; i++) {
+            if(in[i] == rootVal) {
+                rootIndex = i;
+                break;
+            }
+        }
+        int len = rootIndex - inStart;
+        TreeNode root = new TreeNode(rootVal);
+        root.left = helper(pre, preStart + 1, preStart + len, in, inStart, rootIndex - 1);
+        root.right = helper(pre, preStart + len + 1, preEnd, in, rootIndex + 1, inEnd);
+        return root;
+    }
+}
+---------------------------------------------
+106. Construct Binary Tree from Inorder and Postorder Traversal
+class Solution {
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        return helper(inorder, 0, inorder.length - 1, postorder, 0 , postorder.length - 1);
+    }
+    public TreeNode helper(int[] in, int inStart, int inEnd, int[] post, int postStart, int postEnd) {
+        if(inStart > inEnd || postStart > postEnd) {
+            return null;
+        }
+        int rootVal = post[postEnd];
+        int rootIndex = 0;
+        for(int i = inStart; i <= inEnd; i++) {
+            if(in[i] == rootVal) {
+                rootIndex = i;
+                break;
+            }
+        }
+        int len = rootIndex - inStart;
+        TreeNode root = new TreeNode(rootVal);
+        root.left = helper(in, inStart, rootIndex - 1, post, postStart, postStart + len - 1);
+        root.right = helper(in, rootIndex + 1, inEnd, post, postStart + len, postEnd - 1);
+        return root;
+    }
+}
+---------------------------------------------
 107. Binary Tree Level Order Traversal II
 Given a binary tree, return the bottom-up level order traversal of its nodes' values
 ********************************************
@@ -95,6 +206,28 @@ public class Solution {
         return list;
     }
 }
+同102更新
+class Solution {
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        LinkedList<List<Integer>> list = new LinkedList<>();
+        
+        if(root == null) return list;
+        queue.offer(root);
+        while(!queue.isEmpty()) {
+            List<Integer> subList = new LinkedList<>();
+            int num = queue.size();
+            for(int i = 0; i < num; i++) {
+                TreeNode node = queue.poll();
+                if(node.left != null) queue.offer(node.left);
+                if(node.right != null) queue.offer(node.right);
+                subList.add(node.val);
+            }
+            list.addFirst(subList);
+        }
+        return list;
+    }
+}
 ---------------------------------------------
 108. Convert Sorted Array to Binary Search Tree
 Given an array where elements are sorted in ascending order,
@@ -114,6 +247,15 @@ public class Solution {
         return node;
     }
 }
+helper方法相当于
+    public TreeNode helper(int[] nums, int lo, int hi) {
+        if(hi <= lo) return null;
+        int mid = lo + (hi - lo) / 2;
+        TreeNode node = new TreeNode(nums[mid]);
+        node.left = helper(nums, lo, mid);
+        node.right = helper(nums, mid+1, hi);
+        return node;
+    }
 ---------------------------------------------
 109. Convert Sorted List to Binary Search Tree
 Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
@@ -193,6 +335,46 @@ public class Solution {
     }
 }
 ------------------------------------------------
+//重点BFS
+113. Path Sum II
+Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+
+For example:
+Given the below binary tree and sum = 22,
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+return
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+************************************************
+class Solution {
+	//写成成员变量，效率会高一些
+    List<List<Integer>> list = new ArrayList<>();
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        if(root == null) return list;
+        //这里用Deque的话，后面要用Collections.reverse(list)倒序
+        Stack<Integer> stack = new Stack<>();
+        helper(root, sum, stack);
+        return list;
+    }
+    public void helper(TreeNode root, int sum, Stack<Integer> stack) {
+        stack.push(root.val);
+        if(root.left == null && root.right == null && root.val - sum == 0)
+            list.add(new LinkedList<Integer>(stack));
+        if(root.left != null) helper(root.left, sum - root.val, stack);
+        if(root.right != null) helper(root.right, sum - root.val, stack);
+        stack.pop();
+    }
+}
+------------------------------------------------
+
 114.Flatten Binary Tree to Linked List
 Given a binary tree, flatten it to a linked list in-place.
 ************************************************
@@ -214,6 +396,10 @@ public class Solution {
 Populate each next pointer to point to its next right node. 
 If there is no next right node, the next pointer should be set to NULL.
 Initially, all next pointers are set to NULL.
+Note:
+You may only use constant extra space.
+You may assume that it is a perfect binary tree (ie, 
+all leaves are at the same level, and every parent has two children).
 **************************************************
 public class Solution {
     public void connect(TreeLinkNode root) {
@@ -229,7 +415,49 @@ public class Solution {
     }
 }
 ---------------------------------------------------
+117. Populating Next Right Pointers in Each Node II
+Follow up for problem "Populating Next Right Pointers in Each Node".
 
+What if the given tree could be any binary tree? Would your previous solution still work?
+
+Note:
+
+You may only use constant extra space.
+For example,
+Given the following binary tree,
+         1
+       /  \
+      2    3
+     / \    \
+    4   5    7
+After calling your function, the tree should look like:
+         1 -> NULL
+       /  \
+      2 -> 3 -> NULL
+     / \    \
+    4-> 5 -> 7 -> NULL
+
+public class Solution {
+    public void connect(TreeLinkNode root) {
+        while(root != null) {
+            TreeLinkNode cur = new TreeLinkNode(0);
+            TreeLinkNode temp = cur;
+            while(root != null) {
+                if(root.left != null) {
+                    cur.next = root.left;
+                    cur = cur.next;
+                }
+                if(root.right != null) {
+                    cur.next = root.right;
+                    cur = cur.next;
+                }
+                root = root.next;
+            }
+            root = temp.next;
+        }
+    }
+}
+---------------------------------------------------
 118. Pascal's Triangle
 Given numRows, generate the first numRows of Pascal's triangle.
 For example, given numRows = 5,
@@ -565,6 +793,7 @@ public class Solution {
 144. Binary Tree Preorder Traversal
 Given a binary tree, return the preorder traversal of its nodes' values.
 ********************************************
+//递归
 public class Solution {
     public List<Integer> preorderTraversal(TreeNode root) {
         List<Integer> list = new ArrayList<>();
@@ -578,9 +807,26 @@ public class Solution {
         preOrder(root.right, list);
     }
 }
+//迭代解
+public class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        if(root == null) return list;
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while(!stack.isEmpty()) {
+            TreeNode node = stack.pop();
+            list.add(node.val);
+            if(node.right != null) stack.push(node.right);
+            if(node.left != null) stack.push(node.left);
+        }
+        return list;
+    }
+}
 ---------------------------------------------
 145. Binary Tree Postorder Traversal
 ********************************************
+//递归
 public class Solution {
     public List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> list = new LinkedList<>();
@@ -592,6 +838,25 @@ public class Solution {
         postOrder(root.left, list);
         postOrder(root.right, list);
         list.add(root.val);
+    }
+}
+//迭代
+public class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        LinkedList<Integer> list = new LinkedList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode p = root;
+        while(!stack.isEmpty() || p != null) {
+            if(p != null) {
+                stack.push(p);
+                list.addFirst(p.val);
+                p = p.right;
+            } else {
+                TreeNode node = stack.pop();
+                p = node.left;
+            }
+        }
+        return list;
     }
 }
 ---------------------------------------------
