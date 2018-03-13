@@ -182,15 +182,12 @@ public class Solution {
         StringBuilder sb = new StringBuilder();
         int i = a.length() - 1, j = b.length() - 1;
         int carry = 0;
-        while(i >= 0 || j >= 0) {
+        while(i >= 0 || j >= 0 || carry != 0) {
             int sum = carry;
             if( j >= 0) sum += b.charAt(j--) - '0';
             if( i >= 0) sum += a.charAt(i--) - '0';
             sb.append(sum % 2);
             carry = sum / 2;
-        }
-        if( carry != 0) {
-            sb.append(carry);
         }
         return sb.reverse().toString();
         
@@ -206,7 +203,7 @@ public class Solution {
         if(x == 0) {
             return 0;
         }
-        int lo = 1; int hi = Integer.MAX_VALUE;
+        int lo = 1; int hi = x;
         while(true) {
             int mid = lo + (hi - lo) / 2;
             if(mid > x / mid) {
@@ -220,6 +217,7 @@ public class Solution {
         }
     }
 }
+
 -------------------------------------------------
 70. Climbing Stairs
 You are climbing a stair case. It takes n steps to reach to the top.
@@ -478,6 +476,42 @@ class Solution {
     }
 }
 --------------------------------------------------------
+92. Reverse Linked List II
+Reverse a linked list from position m to n. Do it in-place and in one-pass.
+For example:
+Given 1->2->3->4->5->NULL, m = 2 and n = 4,
+return 1->4->3->2->5->NULL.
+*******************************************************
+class Solution {
+    public ListNode reverseBetween(ListNode head, int m, int n) {
+        ListNode helper = new ListNode(0);
+        helper.next = head;
+        ListNode pre = helper;          
+        for(int i = 1; i < m; i++) {
+            pre = pre.next;    
+        }        
+        ListNode cur = pre.next;    //第m个节点
+        ListNode then = cur;
+        for(int i = m; i < n; i++) {
+            then = then.next;
+        }
+        ListNode cur1 = cur;
+        ListNode temp = then.next;
+        ListNode pre1 = pre;
+        ListNode next = null;
+        while(cur != temp) {
+            next = cur.next;
+            cur.next = pre1;
+            pre1 = cur;
+            cur = next;
+        }
+        pre.next = pre1;
+        cur1.next = temp;
+        
+        return helper.next;
+    }
+}
+--------------------------------------------------------
 94. Binary Tree Inorder Traversal
 ********************************************************
 class Solution {
@@ -543,9 +577,7 @@ public class Solution {
     public boolean isSameTree(TreeNode p, TreeNode q) {
         if(p == null && q == null) return true;
         if(p == null || q == null) return false;
-        if(p.val == q.val)
-            return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
-        return false;
+        return p.val == q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
     }
 }
 ------------------------------------------------------

@@ -58,7 +58,7 @@ public class MinStack {
     }
     
     public void push(int x) {
-        if(x <= min) {
+        if(x <= min) {      //这里必须是小于等于
             stack.push(min);
             min = x;
         }

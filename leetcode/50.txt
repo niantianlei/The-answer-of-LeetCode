@@ -228,7 +228,7 @@ public class Solution {
     }
 }
 --------------------------------
-15. 3Sum
+15. 3Sum   %%
 For example, given array S = [-1, 0, 1, 2, -1, -4],
 A solution set is:
 [
@@ -451,13 +451,13 @@ public class Solution {
         if(nums == null || nums.length == 0) {
             return 0;
         }
-        int j = 0;
-        for(int i = 0; i < nums.length; i++) {
-            if(nums[i] != nums[j]) {
-                nums[++j] = nums[i];
+	int j = 1;
+        for(int i = 1; i < nums.length; i++) {
+            if(nums[i] != nums[j-1]) {
+                nums[j++] = nums[i];
             }
         }
-        return ++j;
+        return j;
     }
 }
 ------------------------------------------
@@ -587,6 +587,23 @@ public int searchInsert(int[] nums, int target) {
     }
     return low;
 }
+//或者
+public class Solution {
+    public int searchInsert(int[] nums, int target) {
+        int lo = 0, hi = nums.length - 1;
+        while(lo <= hi) {
+            int mid = lo + (hi-lo) / 2;
+            if(nums[mid] < target) {
+                lo = mid + 1;
+            } else if(nums[mid] > target) {
+                hi = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return lo;
+    }
+}
 --------------------------------------------
 36. Valid Sudoku
 Determine if a Sudoku is valid, according to: Sudoku Puzzles - The Rules.
@@ -671,23 +688,24 @@ A solution set is:
 class Solution {
     public List<List<Integer>> combinationSum(int[] nums, int target) {
         List<List<Integer>> list = new ArrayList<>();
-        Arrays.sort(nums);
+        //Arrays.sort(nums);
         backtrack(list, new ArrayList<>(), nums, target, 0);
         return list;
     }
 
     private void backtrack(List<List<Integer>> list, List<Integer> tempList, int [] nums, int remain, int start){
-        if(remain < 0) return;
-        else if(remain == 0) list.add(new ArrayList<>(tempList));
-        else{ 
+        if(remain == 0) {
+            list.add(new ArrayList<>(tempList));
+        } else if (remain > 0 && start < nums.length) {
             for(int i = start; i < nums.length; i++){
                 tempList.add(nums[i]);
-                backtrack(list, tempList, nums, remain - nums[i], i); // not i + 1 because we can reuse same elements
+                backtrack(list, tempList, nums, remain - nums[i], i); // 不是i + 1 因为元素可以重复使用
                 tempList.remove(tempList.size() - 1);
             }
         }
     }
 }
+
 -----------------------------------------------
 40. Combination Sum II
 Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
@@ -740,7 +758,7 @@ class Solution {
     }
 }
 ------------------------------------------------------------------------------
-46. Permutations
+46. Permutations  %%
 Given a collection of distinct numbers, return all possible permutations.
 For example,
 [1,2,3] have the following permutations:

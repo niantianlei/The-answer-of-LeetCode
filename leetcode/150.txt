@@ -294,7 +294,7 @@ public class Solution {
     public boolean isBalanced(TreeNode root) {  
         if(root == null){  
             return true;  
-        }  
+        }
 
         if(Math.abs(depth(root.left)-depth(root.right)) > 1){  
             return false;  
@@ -336,7 +336,7 @@ public class Solution {
 }
 ------------------------------------------------
 //重点BFS
-113. Path Sum II
+113. Path Sum II   %%
 Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
 
 For example:
@@ -355,22 +355,20 @@ return
 ]
 ************************************************
 class Solution {
-	//写成成员变量，效率会高一些
-    List<List<Integer>> list = new ArrayList<>();
     public List<List<Integer>> pathSum(TreeNode root, int sum) {
-        if(root == null) return list;
-        //这里用Deque的话，后面要用Collections.reverse(list)倒序
-        Stack<Integer> stack = new Stack<>();
-        helper(root, sum, stack);
-        return list;
+        List<List<Integer>> res = new ArrayList<>();
+        if(root == null) return res;
+        helper(res, new ArrayList<Integer>(), root, sum);
+        return res;
     }
-    public void helper(TreeNode root, int sum, Stack<Integer> stack) {
-        stack.push(root.val);
-        if(root.left == null && root.right == null && root.val - sum == 0)
-            list.add(new LinkedList<Integer>(stack));
-        if(root.left != null) helper(root.left, sum - root.val, stack);
-        if(root.right != null) helper(root.right, sum - root.val, stack);
-        stack.pop();
+    public void helper(List<List<Integer>> res, List<Integer> list, TreeNode root, int sum) {
+        list.add(root.val);
+        if(root.left == null && root.right == null && root.val == sum) {
+            res.add(new ArrayList<Integer>(list));
+        }
+        if(root.left != null) helper(res, list, root.left, sum - root.val);
+        if(root.right != null) helper(res, list, root.right, sum - root.val);
+        list.remove(list.size() - 1);
     }
 }
 ------------------------------------------------
