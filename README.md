@@ -12,13 +12,13 @@
 
 看到自己的算法运行时间打败所有人的时候，还是很激动的  
 以下就是一些例子  
-<img src="/git-img/fig1.png" height="40%" width="50%" />  
-<img src="/git-img/fig2.png" height="40%" width="50%" />  
-<img src="/git-img/fig3.png" height="40%" width="50%" />  
-<img src="/git-img/fig4.png" height="40%" width="50%" />  
-<img src="/git-img/fig5.png" height="40%" width="50%" />  
-<img src="/git-img/fig6.png" height="40%" width="50%" />  
-<img src="/git-img/fig7.png" height="40%" width="50%" />  
+<img src="/git-img/fig1.png" height="30%" width="40%" />  
+<img src="/git-img/fig3.png" height="30%" width="40%" />  
+<img src="/git-img/fig2.png" height="30%" width="40%" />  
+<img src="/git-img/fig4.png" height="30%" width="40%" />  
+<img src="/git-img/fig5.png" height="30%" width="40%" />  
+<img src="/git-img/fig6.png" height="30%" width="40%" />  
+<img src="/git-img/fig7.png" height="30%" width="40%" />  
 <img src="/git-img/fig8.png" height="40%" width="50%" />  
 <img src="/git-img/fig9.png" height="40%" width="50%" />  
 <img src="/git-img/fig10.png" height="30%" width="40%" />  
