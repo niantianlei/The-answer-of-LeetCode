@@ -22,6 +22,6 @@
 <img src="/git-img/fig8.png" height="60%" width="60%" />  
 <img src="/git-img/fig9.png" height="30%" width="40%" />  
 <img src="/git-img/fig10.png" height="30%" width="45%" />  
-<img src="/git-img/fig11.png" height="30%" width="40%" />
-<img src="/git-img/fig12.png" height="30%" width="40%" />
+<img src="/git-img/fig11.png" height="30%" width="40%" />  
+<img src="/git-img/fig12.png" height="30%" width="40%" />   
 <img src="/git-img/fig13.png" height="30%" width="40%" />      
