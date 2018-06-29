@@ -9,3 +9,19 @@
 
 2018/3/13
 抽几天时间把剑指offer的题也做了，和LeetCode相比，题不是很难。但也不是每道题都会做，比如程序的鲁棒性总是不容易想全。现在在遇到这些类型的题目应该可以轻松搞定。
+
+看到自己的算法运行时间打败所有人的时候，还是很激动的  
+以下就是一些例子  
+<img src="/git-img/fig1.png"/>  
+<img src="/git-img/fig2.png"/>  
+<img src="/git-img/fig3.png"/>  
+<img src="/git-img/fig4.png"/>  
+<img src="/git-img/fig5.png"/>  
+<img src="/git-img/fig6.png"/>  
+<img src="/git-img/fig7.png"/>  
+<img src="/git-img/fig8.png"/>  
+<img src="/git-img/fig9.png"/>  
+<img src="/git-img/fig10.png"/>  
+<img src="/git-img/fig11.png"/>
+<img src="/git-img/fig12.png"/>
+<img src="/git-img/fig13.png"/>      
