@@ -247,15 +247,6 @@ public class Solution {
         return node;
     }
 }
-helper方法相当于
-    public TreeNode helper(int[] nums, int lo, int hi) {
-        if(hi <= lo) return null;
-        int mid = lo + (hi - lo) / 2;
-        TreeNode node = new TreeNode(nums[mid]);
-        node.left = helper(nums, lo, mid);
-        node.right = helper(nums, mid+1, hi);
-        return node;
-    }
 ---------------------------------------------
 109. Convert Sorted List to Binary Search Tree
 Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
@@ -372,7 +363,6 @@ class Solution {
     }
 }
 ------------------------------------------------
-
 114.Flatten Binary Tree to Linked List
 Given a binary tree, flatten it to a linked list in-place.
 ************************************************
@@ -389,7 +379,6 @@ public class Solution {
     }
 }
 -------------------------------------------------
-
 116.Populating Next Right Pointers in Each Node
 Populate each next pointer to point to its next right node. 
 If there is no next right node, the next pointer should be set to NULL.
@@ -502,6 +491,30 @@ public class Solution {
     }
 }
 ----------------------------------------------------
+120. Triangle
+[
+     [2],
+    [3,4],
+   [6,5,7],
+  [4,1,8,3]
+]
+The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+************************************************
+class Solution {
+     
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int row = triangle.size();//行数
+        int[] res = new int[row + 1];//倒着求，求最后一行到第一行最小和，这样就可以用o(n)空间了
+        for(int i = row - 1; i >= 0; i--) {
+            List<Integer> list = triangle.get(i);
+            for(int j = 0;j < list.size(); j++){
+                res[j] = Math.min(res[j+1], res[j]) + list.get(j); //最后一行的最小值就是当前数
+            }
+        }
+        return res[0];
+    }
+}
+----------------------------------------------------
 121. Best Time to Buy and Sell Stock
 Say you have an array for which the ith element is the price of a given stock on day i.
 If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), 
@@ -542,6 +555,39 @@ public class Solution {
     }
 }
 ------------------------------------------------------
+124. Binary Tree Maximum Path Sum
+Input: [1,2,3]
+
+       1
+      / \
+     2   3
+
+Output: 6
+
+Example 2:
+Input: [-10,9,20,null,null,15,7]
+   -10
+   / \
+  9  20
+    /  \
+   15   7
+Output: 15+20+7=42
+************************************************
+class Solution {
+    private int max = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        helper(root);
+        return max;
+    }
+    public int helper(TreeNode root) {
+        if(root == null) return 0;
+        int left = Math.max(0, helper(root.left));
+        int right = Math.max(0, helper(root.right));
+        max = Math.max(max, root.val + left + right);
+        return root.val + Math.max(left, right);
+    }
+}
+------------------------------------------------------
 125. Valid Palindrome
 Given a string, determine if it is a palindrome, 
 considering only alphanumeric characters and ignoring cases.
@@ -579,7 +625,7 @@ public class Solution {
                 if(nums[i] == nums[i - 1] + 1) {
                 total += 1;
                 } else {
-                    total = 1;
+                    total = 1; //注意：是1不是0
                 }
 
                 if(total > max) max = total;
@@ -606,8 +652,35 @@ public class Solution {
     }
 }
 -------------------------------------------------
+134. Gas Station
+Input: 
+gas  = [1,2,3,4,5]
+cost = [3,4,5,1,2]
 
+Output: 3
 
+Input: 
+gas  = [2,3,4]
+cost = [3,4,3]
+
+Output: -1
+*************************************************
+class Solution {
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int start = 0;
+        int total = 0;
+        int tank = 0;
+        for(int i = 0; i < gas.length; i++) {
+            if((tank = tank + gas[i] - cost[i]) < 0) {
+                start = i + 1;
+                total += tank;
+                tank = 0;
+            }
+        }
+        return total + tank < 0 ? -1 : start;
+    }
+}
+--------------------------------------------------
 136. Single Number
 Given an array of integers, every element appears twice except for one. Find that single one.
 Note:
@@ -723,7 +796,6 @@ public class Solution {
     }
 }
 ---------------------------------------------
-
 143. Reorder List
 Given a singly linked list L: L0?L1?…?Ln-1?Ln,
 reorder it to: L0?Ln?L1?Ln-1?L2?Ln-2?…
@@ -787,7 +859,6 @@ public class Solution {
 
 }
 ---------------------------------------------
-
 144. Binary Tree Preorder Traversal
 Given a binary tree, return the preorder traversal of its nodes' values.
 ********************************************
@@ -858,7 +929,38 @@ public class Solution {
     }
 }
 ---------------------------------------------
-
+146. LRU Cache
+class LRUCache {
+    int capacity;
+    Map<Integer, Integer> record;
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        record = new LinkedHashMap<>();
+    }
+    
+    public int get(int key) {
+        if(!record.containsKey(key)) {
+            return -1;
+        }
+        Integer val = record.get(key);
+        record.remove(key);
+        record.put(key, val);
+        return val;
+    }
+    
+    public void put(int key, int value) {
+        if(record.containsKey(key)) record.remove(key);
+        if(record.size() == capacity) {
+            Iterator it = record.keySet().iterator();
+            if(it.hasNext()) {
+                Integer key_toRm = (Integer) it.next();
+                record.remove(key_toRm);
+            }
+        }
+        record.put(key, value);
+    }
+}
+---------------------------------------------
 一颗星147. Insertion Sort List
 ********************************************
 public class Solution {
@@ -887,5 +989,36 @@ public class Solution {
 		
 		return helper.next;
 	}
+}
+---------------------------------------------
+148.链表归并排序
+********************************************
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode pre = null, slow = head, fast = head;
+        while(fast != null && fast.next != null) {
+            pre = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        pre.next = null;
+        ListNode l1 = sortList(head);
+        ListNode l2 = sortList(slow);
+        return merge(l1, l2);
+    }
+    public ListNode merge(ListNode p, ListNode q) {
+        if(p == null) return q;
+        if(q == null) return p;
+        ListNode node;
+        if(p.val <= q.val) {
+            node = p;
+            node.next = merge(p.next, q);
+        } else {
+            node = q;
+            node.next = merge(p, q.next);
+        }
+        return node;
+    }
 }
 ---------------------------------------------

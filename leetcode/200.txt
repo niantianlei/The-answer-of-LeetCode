@@ -15,7 +15,6 @@ public class Solution {
     }
 }
 ---------------------------------------------------------------
-
 152. Maximum Product Subarray
 Find the contiguous subarray within an array (containing at least one number) which has the largest product.
 For example, given the array [2,3,-2,4],
@@ -39,7 +38,55 @@ public class Solution {
 	}
 }
 ---------------------------------------------------------------
+153. Find Minimum in Rotated Sorted Array
+Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
 
+(i.e.,  [0,1,2,4,5,6,7] might become  [4,5,6,7,0,1,2]).
+Find the minimum element.
+You may assume no duplicate exists in the array.
+Example 1:
+Input: [3,4,5,1,2] 
+Output: 1
+
+Example 2:
+Input: [4,5,6,7,0,1,2]
+Output: 0
+************************************************************
+class Solution {
+    public int findMin(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return Integer.MAX_VALUE;
+        }
+        int lo = 0, hi = nums.length - 1;
+        while(lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(nums[mid] > nums[hi]) lo = mid + 1;
+            else hi = mid;
+        }
+        return nums[lo];
+    }
+}
+------------------------------------------------------------
+154. Find Minimum in Rotated Sorted Array II
+Input:Input: [1,3,5]
+ [1,3,5] Output:Output: 1 1
+Example 2:
+
+Input: [2,2,2,0,1]
+Output: 0
+************************************************************
+class Solution {
+    public int findMin(int[] nums) {
+        if(nums == null || nums.length == 0) return 0;
+        for(int i = 0; i < nums.length-1; i++) {
+            if(nums[i] > nums[i + 1]) {
+                return nums[i + 1];
+            }
+        }
+        return nums[0];
+    }
+}
+------------------------------------------------------------
 155. Min Stack
 Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
 
@@ -98,6 +145,7 @@ public class Solution {
         return b;
     }
 }
+//验证两链表是否相交，看最后一个节点是否一样即可
 ----------------------------------------------------------------
 
 162. Find Peak Element
@@ -112,7 +160,7 @@ public class Solution {
         if(nums == null || nums.length == 0) {
             return Integer.MIN_VALUE;
         }
-        if(nums.length == 1) return 0;
+        if(nums.length == 1) return 0;//注意：不能丢
         for(int i = 1; i < nums.length - 1; i++) {
             if(nums[i] > nums[i - 1] && nums[i] > nums[i + 1]) return i; 
         }
@@ -220,10 +268,24 @@ Given an array of size n, find the majority element.
 The majority element is the element that appears more than  floor(n/2)  times.
 You may assume that the array is non-empty and the majority element always exist in the array.
 *****************************************************************
-public class Solution {
+class Solution {
     public int majorityElement(int[] nums) {
-        Arrays.sort(nums);
-        return nums[(0 + nums.length - 1) / 2];
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        int a = nums[0];
+        int count = 0;
+        for(int i = 0 ; i < nums.length; i++) {
+            if(nums[i] == a) {
+                count++;
+            } else if (count == 0) {
+                a = nums[i];
+                count = 1;
+            } else {
+                count--;
+            }
+        }
+        return a;
     }
 }
 ----------------------------------------------------------------
@@ -314,7 +376,6 @@ public class BSTIterator {
     }
 }
 ----------------------------------------------------------------
-
 187. Repeated DNA Sequences
 All DNA is composed of a series of nucleotides abbreviated as A, C, G, and T, for example: "ACGAATTCCG". 
 When studying DNA, it is sometimes useful to identify repeated sequences within the DNA.
@@ -335,7 +396,6 @@ public class Solution {
     }
 }
 ----------------------------------------------------------------
-
 189. Rotate Array
 Rotate an array of n elements to the right by k steps.
 For example, with n = 7 and k = 3, the array [1,2,3,4,5,6,7] is rotated to [5,6,7,1,2,3,4].

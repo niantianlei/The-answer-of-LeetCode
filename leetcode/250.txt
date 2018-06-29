@@ -11,7 +11,6 @@ public class Solution {
     }
 }
 --------------------------------------------------------------------------
-
 202. Happy Number
 Example: 19 is a happy number
 
@@ -65,7 +64,6 @@ public class Solution {
     }
 }
 --------------------------------------------------------------------------
-
 204. Count Primes
 Count the number of prime numbers less than a non-negative number, n.        
 *************************************************************************
@@ -85,7 +83,6 @@ public class Solution {
     }
 }
 --------------------------------------------------------------------------
-
 205. Isomorphic Strings
 For example,
 Given "egg", "add", return true.
@@ -141,7 +138,6 @@ public class Solution {
     }
 }
 --------------------------------------------------------------------------
-
 206. Reverse Linked List
 *************************************************************************
 //反转双向链表
@@ -167,7 +163,6 @@ public ListNode reverseList(ListNode head) {
     return p;
 }
 --------------------------------------------------------------------------
-
 209. Minimum Size Subarray Sum
 Given an array of n positive integers and a positive integer s, 
 find the minimal length of a contiguous subarray of which the sum ≥ s. If there isn't one, return 0 instead.
@@ -185,11 +180,10 @@ public class Solution {
                 sum -= nums[i++];
             }
         }
-        return min == Integer.MAX_VALUE ? 0 : min;
+        return min == Integer.MAX_VALUE ? 0 : min;//注意
 	}
 }
 --------------------------------------------------------------------------
-
 215. Kth Largest Element in an Array
 *************************************************************************
 //建堆O(NlgK) time + O(K)memory

@@ -251,7 +251,7 @@ class Solution {
                         lo++; hi--;
                     } else if (nums[lo] + nums[hi] < sum) lo++;
                     else hi--;
-               }
+                }
             }
         }
         return res;
@@ -362,7 +362,6 @@ public class Solution {
             mergedHead.next = mergeTwoLists(l1, l2.next);
         }
         return mergedHead;
-       
     }
 }
 ----------------------------------------
@@ -378,21 +377,21 @@ n=3
 ****************************************************************************
 class Solution {
     public List<String> generateParenthesis(int n) {
-        List<String> list = new ArrayList<String>();
-        backtrack(list, "", 0, 0, n);
-        return list;
+        List<String> res = new ArrayList<>();
+        helper(res, "", n, 0, 0);
+        return res;
     }
-    
-    public void backtrack(List<String> list, String str, int open, int close, int max){
-        
-        if(str.length() == max*2){
-            list.add(str);
-            return;
+    public void helper(List<String> res, String s, int n, int lo, int hi) {
+        if(n * 2 == s.length()) {
+            res.add(s);
+        } else {
+            if(lo < n) {
+                helper(res, s + "(", n, lo + 1, hi);
+            }
+            if(hi < lo) {
+                helper(res, s + ")", n, lo, hi + 1);
+            }
         }
-        if(open < max)
-            backtrack(list, str+"(", open+1, close, max);
-        if(close < open)
-            backtrack(list, str+")", open, close+1, max);
     }
 }
 ------------------------------------------------------------------------------
@@ -695,7 +694,7 @@ class Solution {
 
     private void backtrack(List<List<Integer>> list, List<Integer> tempList, int [] nums, int remain, int start){
         if(remain == 0) {
-            list.add(new ArrayList<>(tempList));
+            list.add(new ArrayList<>(tempList));//зЂвт
         } else if (remain > 0 && start < nums.length) {
             for(int i = start; i < nums.length; i++){
                 tempList.add(nums[i]);
@@ -793,7 +792,45 @@ public class Solution {
     }
 }
 ------------------------------------------
-
+47
+Input: [1,1,2]
+Output:
+[
+  [1,1,2],
+  [1,2,1],
+  [2,1,1]
+]
+*******************************************
+class Solution {
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        helper(res, nums, 0);
+        return res;
+    }
+    public void helper(List<List<Integer>> res, int[] nums, int start) {
+        if(start == nums.length) {
+            List<Integer> list = new ArrayList<>();
+            for(int x : nums) {
+                list.add(x);
+            }
+            res.add(list);
+        } else {
+            Set<Integer> set = new HashSet<>();
+            for(int i = start; i < nums.length; i++) {
+                if(!set.add(nums[i])) continue;
+                swap(nums, i, start);
+                helper(res, nums, start + 1);
+                swap(nums, i, start);
+            }
+        }
+    }
+    private void swap(int[] nums, int i, int j) {
+        int save = nums[i];
+        nums[i] = nums[j];
+        nums[j] = save;
+    }
+}
+------------------------------------------
 48. Rotate Image
 Given input matrix = 
 [
@@ -861,5 +898,4 @@ class Solution {
         else return (n % 2 == 0) ? myPow(x*x, n / 2) : x*myPow(x*x, n / 2);
     }
 }
-
 ------------------------------------------
